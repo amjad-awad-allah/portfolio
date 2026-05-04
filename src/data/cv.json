@@ -1,0 +1,430 @@
+
+{
+  "personalInfo": {
+    "name": "Amjad Awad-Allah",
+    "title": "Software Developer & AI Engineer",
+    "email": "example@email.com",
+    "phone": "+49 123 456 789",
+    "location": "Berlin, Germany",
+    "bio": "Experienced software developer with expertise in mobile application development, artificial intelligence, and machine learning. Specializing in creating innovative and efficient solutions across various platforms.",
+    "photo": "/path/to/profile-photo.jpg",
+    "socials": [
+      {
+        "platform": "LinkedIn",
+        "url": "https://linkedin.com/in/example"
+      },
+      {
+        "platform": "GitHub",
+        "url": "https://github.com/example"
+      },
+      {
+        "platform": "Twitter",
+        "url": "https://twitter.com/example"
+      }
+    ]
+  },
+  "education": [
+    {
+      "degree": "Master of Science in Computer Science",
+      "institution": "Technical University of Berlin",
+      "location": "Berlin, Germany",
+      "startDate": "2014-09-01",
+      "endDate": "2016-06-30",
+      "description": "Specialized in Artificial Intelligence and Machine Learning",
+      "achievements": [
+        "Graduated with honors",
+        "Published research paper on machine learning applications"
+      ]
+    },
+    {
+      "degree": "Bachelor of Science in Software Engineering",
+      "institution": "University of Damascus",
+      "location": "Damascus, Syria",
+      "startDate": "2010-09-01",
+      "endDate": "2014-06-30",
+      "description": "Focus on mobile application development and database systems",
+      "achievements": [
+        "Top 5% of graduating class",
+        "Dean's List for academic excellence"
+      ]
+    }
+  ],
+  "workExperience": [
+    {
+      "company": "NVS-SOFT",
+      "position": "Senior Android Developer",
+      "location": "Berlin, Germany",
+      "startDate": "2018-01-01",
+      "endDate": "2021-12-31",
+      "description": "Led the development of enterprise mobile applications with comprehensive security features and hardware integration.",
+      "responsibilities": [
+        "Led the development of enterprise mobile applications",
+        "Implemented secure data storage and transmission protocols",
+        "Optimized database operations, improving performance by 40%",
+        "Integrated hardware peripherals including ID scanners and fingerprint readers"
+      ],
+      "projects": [
+        {
+          "id": "tarasol",
+          "name": "Tarasol Suite",
+          "description": "Comprehensive enterprise suite with security features and hardware integration.",
+          "details": "Optimized database, reducing data retrieval time by 40%. Developed a secure PDF reader with digital signature integration. Integrated modern hardware (ID scanners & fingerprint recognition).",
+          "technologies": ["Java", "Android SDK", "SQLite", "Fingerprint API", "PDF Rendering"],
+          "links": {
+            "liveLink": "https://play.google.com/store",
+            "githubLink": "https://github.com/example/tarasol",
+            "downloadLink": null
+          }
+        },
+        {
+          "id": "retention",
+          "name": "Retention Department RD",
+          "description": "Secure data management application with biometric authentication.",
+          "details": "Implemented fingerprint authentication, reducing data entry errors by 60%.",
+          "technologies": ["Java", "Android SDK", "Biometric API", "SQLite", "Encryption"],
+          "links": {
+            "liveLink": "https://play.google.com/store",
+            "githubLink": "https://github.com/example/retention",
+            "downloadLink": null
+          }
+        },
+        {
+          "id": "arcmate",
+          "name": "ArcMate 9 Enterprise Mobile",
+          "description": "Document management system for enterprise environments.",
+          "details": "Built a document management app using C# & Xamarin.",
+          "technologies": ["C#", "Xamarin", "Azure Storage", "PDF Processing"],
+          "links": {
+            "liveLink": "https://play.google.com/store",
+            "githubLink": "https://github.com/example/arcmate",
+            "downloadLink": null
+          }
+        }
+      ]
+    },
+    {
+      "company": "PROTECH Group",
+      "position": "Android Developer",
+      "location": "Berlin, Germany",
+      "startDate": "2017-01-01",
+      "endDate": "2018-01-01",
+      "description": "Developed web and mobile applications for router management and security monitoring.",
+      "responsibilities": [
+        "Designed and developed Android applications for router management and security",
+        "Created custom network monitoring tools",
+        "Implemented real-time data synchronization",
+        "Automated testing procedures improving quality assurance"
+      ],
+      "projects": [
+        {
+          "id": "pronet",
+          "name": "ProNet",
+          "description": "Router management system with web and mobile interfaces.",
+          "details": "Developed web & Android apps for router management.",
+          "technologies": ["Java", "REST API", "WebSockets", "Network Protocols"],
+          "links": {
+            "liveLink": null,
+            "githubLink": "https://github.com/example/pronet",
+            "downloadLink": "#download"
+          }
+        },
+        {
+          "id": "proguard",
+          "name": "Proguard",
+          "description": "Security monitoring application for guard personnel.",
+          "details": "Security and monitoring application for guard shifts.",
+          "technologies": ["Java", "Firebase", "Real-time Database", "Maps API"],
+          "links": {
+            "liveLink": null,
+            "githubLink": "https://github.com/example/proguard",
+            "downloadLink": "#download"
+          }
+        }
+      ]
+    },
+    {
+      "company": "Smart Angel",
+      "position": "Mobile Application Developer",
+      "location": "Damascus, Syria",
+      "startDate": "2016-01-01",
+      "endDate": "2017-01-01",
+      "description": "Built a scalable e-commerce platform with real-time order tracking.",
+      "responsibilities": [
+        "Developed e-commerce application with real-time tracking",
+        "Implemented payment gateway integrations",
+        "Created offline-first architecture for reliable functionality",
+        "Optimized UI/UX for improved customer engagement"
+      ],
+      "projects": [
+        {
+          "id": "bobazzar",
+          "name": "Bobazzar",
+          "description": "E-commerce platform with real-time order tracking.",
+          "details": "Built a scalable E-commerce app with real-time order tracking.",
+          "technologies": ["Java", "Firebase", "Payment Gateways", "Real-time Database"],
+          "links": {
+            "liveLink": null,
+            "githubLink": "https://github.com/example/bobazzar",
+            "downloadLink": "#download"
+          }
+        }
+      ]
+    },
+    {
+      "company": "Supertech",
+      "position": "Junior Android Developer",
+      "location": "Damascus, Syria",
+      "startDate": "2015-01-01",
+      "endDate": "2016-01-01",
+      "description": "Developed multimedia streaming applications and background playback functionality.",
+      "responsibilities": [
+        "Built multimedia streaming applications",
+        "Developed background playback functionality for media apps",
+        "Created custom media conversion tools",
+        "Implemented efficient caching mechanisms for improved performance"
+      ],
+      "projects": [
+        {
+          "id": "publitools",
+          "name": "Publitools",
+          "description": "Media streaming application with background playback functionality.",
+          "details": "YouTube background playback & MP3 conversion.",
+          "technologies": ["Java", "ExoPlayer", "Media Codecs", "Background Services"],
+          "links": {
+            "liveLink": null,
+            "githubLink": "https://github.com/example/publitools",
+            "downloadLink": "#download"
+          }
+        },
+        {
+          "id": "almadina",
+          "name": "Al Madina FM",
+          "description": "Radio streaming application with schedule and notifications.",
+          "details": "Live streaming app for Al Madina FM radio.",
+          "technologies": ["Java", "Media Streaming", "Notifications API", "ExoPlayer"],
+          "links": {
+            "liveLink": "https://play.google.com/store",
+            "githubLink": "https://github.com/example/almadina",
+            "downloadLink": null
+          }
+        }
+      ]
+    }
+  ],
+  "skills": {
+    "technical": [
+      {
+        "category": "Programming Languages",
+        "items": [
+          { "name": "Java", "level": 95 },
+          { "name": "Kotlin", "level": 90 },
+          { "name": "Python", "level": 85 },
+          { "name": "C#", "level": 80 },
+          { "name": "JavaScript", "level": 75 },
+          { "name": "TypeScript", "level": 70 }
+        ]
+      },
+      {
+        "category": "Frameworks & Libraries",
+        "items": [
+          { "name": "Android SDK", "level": 95 },
+          { "name": "Firebase", "level": 90 },
+          { "name": "TensorFlow", "level": 85 },
+          { "name": "React", "level": 75 },
+          { "name": "Node.js", "level": 70 },
+          { "name": "PyTorch", "level": 65 }
+        ]
+      },
+      {
+        "category": "Tools & Platforms",
+        "items": [
+          { "name": "Git", "level": 90 },
+          { "name": "Docker", "level": 85 },
+          { "name": "Android Studio", "level": 95 },
+          { "name": "Visual Studio Code", "level": 90 },
+          { "name": "Jira", "level": 85 },
+          { "name": "Google Cloud Platform", "level": 80 }
+        ]
+      }
+    ],
+    "languages": [
+      { "language": "English", "proficiency": "Fluent", "level": 95 },
+      { "language": "German", "proficiency": "Professional", "level": 80 },
+      { "language": "Arabic", "proficiency": "Native", "level": 100 },
+      { "language": "French", "proficiency": "Basic", "level": 40 }
+    ],
+    "softSkills": [
+      "Problem Solving",
+      "Team Leadership",
+      "Communication",
+      "Project Management",
+      "Agile Methodologies",
+      "Critical Thinking"
+    ]
+  },
+  "projects": {
+    "featured": [
+      {
+        "id": "tarasol",
+        "name": "Tarasol Suite",
+        "description": "Comprehensive enterprise suite with security features and hardware integration.",
+        "longDescription": "Enterprise-level mobile application designed for secure document management and access control. The suite includes modules for identity verification, biometric authentication, and secure document handling.",
+        "role": "Lead Developer",
+        "technologies": ["Java", "Android SDK", "SQLite", "Fingerprint API", "PDF Rendering"],
+        "achievements": [
+          "Optimized database query performance by 40%",
+          "Implemented secure document viewer with digital signature verification",
+          "Integrated biometric authentication reducing unauthorized access by 99%"
+        ],
+        "images": [
+          "https://placehold.co/400x800",
+          "https://placehold.co/400x800",
+          "https://placehold.co/400x800"
+        ],
+        "links": {
+          "liveLink": "https://play.google.com/store",
+          "githubLink": "https://github.com/example/tarasol",
+          "downloadLink": null
+        }
+      },
+      {
+        "id": "bobazzar",
+        "name": "Bobazzar",
+        "description": "E-commerce platform with real-time order tracking.",
+        "longDescription": "Comprehensive e-commerce application with real-time order tracking, payment integration, and offline-first architecture for reliable functionality in areas with unstable internet connections.",
+        "role": "Full Stack Developer",
+        "technologies": ["Java", "Firebase", "Payment Gateways", "Real-time Database"],
+        "achievements": [
+          "Built scalable backend supporting 10,000+ concurrent users",
+          "Implemented offline-first architecture increasing app reliability by 60%",
+          "Reduced checkout abandonment by 35% through optimized UX"
+        ],
+        "images": [
+          "https://placehold.co/400x800",
+          "https://placehold.co/400x800",
+          "https://placehold.co/400x800"
+        ],
+        "links": {
+          "liveLink": null,
+          "githubLink": "https://github.com/example/bobazzar",
+          "downloadLink": "#download"
+        }
+      },
+      {
+        "id": "pronet",
+        "name": "ProNet",
+        "description": "Router management system with web and mobile interfaces.",
+        "longDescription": "Comprehensive network management solution with both web dashboard and mobile applications. Allows for remote router configuration, bandwidth monitoring, and user access management.",
+        "role": "Mobile Developer",
+        "technologies": ["Java", "REST API", "WebSockets", "Network Protocols"],
+        "achievements": [
+          "Developed real-time monitoring system with <100ms latency",
+          "Created intuitive interface reducing support calls by 45%",
+          "Implemented secure remote access protocol for router management"
+        ],
+        "images": [
+          "https://placehold.co/400x800",
+          "https://placehold.co/400x800"
+        ],
+        "links": {
+          "liveLink": null,
+          "githubLink": "https://github.com/example/pronet",
+          "downloadLink": "#download"
+        }
+      }
+    ]
+  },
+  "certifications": [
+    {
+      "name": "Google Certified Android Developer",
+      "issuer": "Google",
+      "date": "2020-05-15",
+      "expires": "2023-05-15",
+      "url": "https://example.com/cert/android"
+    },
+    {
+      "name": "TensorFlow Developer Certificate",
+      "issuer": "Google",
+      "date": "2019-11-10",
+      "expires": null,
+      "url": "https://example.com/cert/tensorflow"
+    },
+    {
+      "name": "AWS Certified Solutions Architect",
+      "issuer": "Amazon Web Services",
+      "date": "2018-07-22",
+      "expires": "2021-07-22",
+      "url": "https://example.com/cert/aws"
+    }
+  ],
+  "publications": [
+    {
+      "title": "Optimizing Mobile Applications for Resource-Constrained Environments",
+      "publisher": "Journal of Mobile Computing",
+      "date": "2020-03-15",
+      "url": "https://example.com/publication1"
+    },
+    {
+      "title": "Implementing Secure Biometric Authentication in Android Applications",
+      "publisher": "International Conference on Mobile Security",
+      "date": "2019-09-05",
+      "url": "https://example.com/publication2"
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Fluent",
+      "level": 95,
+      "details": "Professional working proficiency, technical writing and presentation"
+    },
+    {
+      "language": "German",
+      "proficiency": "Professional",
+      "level": 80,
+      "details": "Business communication, technical documentation, daily conversation"
+    },
+    {
+      "language": "Arabic",
+      "proficiency": "Native",
+      "level": 100,
+      "details": "Mother tongue"
+    },
+    {
+      "language": "French",
+      "proficiency": "Basic",
+      "level": 40,
+      "details": "Basic conversation, reading comprehension"
+    }
+  ],
+  "interests": [
+    "Artificial Intelligence",
+    "Mobile App Development",
+    "Open Source Contribution",
+    "IoT Projects",
+    "Machine Learning",
+    "Blockchain Technology"
+  ],
+  "references": [
+    {
+      "name": "Dr. Julia Schmidt",
+      "position": "CTO",
+      "company": "NVS-SOFT",
+      "email": "j.schmidt@example.com",
+      "phone": "+49 987 654 321",
+      "relationship": "Former Supervisor"
+    },
+    {
+      "name": "Michael Weber",
+      "position": "Senior Developer",
+      "company": "PROTECH Group",
+      "email": "m.weber@example.com",
+      "phone": "+49 123 987 456",
+      "relationship": "Former Colleague"
+    }
+  ],
+  "meta": {
+    "lastUpdated": "2023-05-15",
+    "version": "2.1"
+  }
+}

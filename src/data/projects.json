@@ -1,0 +1,143 @@
+
+{
+  "companies": [
+    {
+      "company": "NVS-SOFT",
+      "year": "2018-2021",
+      "projects": [
+        {
+          "id": "tarasol",
+          "name": "Tarasol Suite",
+          "description": "Comprehensive enterprise suite with security features and hardware integration.",
+          "details": "Optimized database, reducing data retrieval time by 40%. Developed a secure PDF reader with digital signature integration. Integrated modern hardware (ID scanners & fingerprint recognition).",
+          "technologies": ["Java", "Android SDK", "SQLite", "Fingerprint API", "PDF Rendering"],
+          "screenshots": [
+            "https://placehold.co/400x800",
+            "https://placehold.co/400x800",
+            "https://placehold.co/400x800"
+          ],
+          "liveLink": "https://play.google.com/store",
+          "githubLink": "https://github.com/example/tarasol",
+          "downloadLink": null
+        },
+        {
+          "id": "retention",
+          "name": "Retention Department RD",
+          "description": "Secure data management application with biometric authentication.",
+          "details": "Implemented fingerprint authentication, reducing data entry errors by 60%.",
+          "technologies": ["Java", "Android SDK", "Biometric API", "SQLite", "Encryption"],
+          "screenshots": [
+            "https://placehold.co/400x800",
+            "https://placehold.co/400x800"
+          ],
+          "liveLink": "https://play.google.com/store",
+          "githubLink": "https://github.com/example/retention",
+          "downloadLink": null
+        },
+        {
+          "id": "arcmate",
+          "name": "ArcMate 9 Enterprise Mobile",
+          "description": "Document management system for enterprise environments.",
+          "details": "Built a document management app using C# & Xamarin.",
+          "technologies": ["C#", "Xamarin", "Azure Storage", "PDF Processing"],
+          "screenshots": [
+            "https://placehold.co/400x800",
+            "https://placehold.co/400x800"
+          ],
+          "liveLink": "https://play.google.com/store",
+          "githubLink": "https://github.com/example/arcmate",
+          "downloadLink": null
+        }
+      ]
+    },
+    {
+      "company": "PROTECH Group",
+      "year": "2017-2018",
+      "projects": [
+        {
+          "id": "pronet",
+          "name": "ProNet",
+          "description": "Router management system with web and mobile interfaces.",
+          "details": "Developed web & Android apps for router management.",
+          "technologies": ["Java", "REST API", "WebSockets", "Network Protocols"],
+          "screenshots": [
+            "https://placehold.co/400x800",
+            "https://placehold.co/400x800"
+          ],
+          "liveLink": null,
+          "githubLink": "https://github.com/example/pronet",
+          "downloadLink": "#download"
+        },
+        {
+          "id": "proguard",
+          "name": "Proguard",
+          "description": "Security monitoring application for guard personnel.",
+          "details": "Security and monitoring application for guard shifts.",
+          "technologies": ["Java", "Firebase", "Real-time Database", "Maps API"],
+          "screenshots": [
+            "https://placehold.co/400x800",
+            "https://placehold.co/400x800"
+          ],
+          "liveLink": null,
+          "githubLink": "https://github.com/example/proguard",
+          "downloadLink": "#download"
+        }
+      ]
+    },
+    {
+      "company": "Smart Angel",
+      "year": "2016-2017",
+      "projects": [
+        {
+          "id": "bobazzar",
+          "name": "Bobazzar",
+          "description": "E-commerce platform with real-time order tracking.",
+          "details": "Built a scalable E-commerce app with real-time order tracking.",
+          "technologies": ["Java", "Firebase", "Payment Gateways", "Real-time Database"],
+          "screenshots": [
+            "https://placehold.co/400x800",
+            "https://placehold.co/400x800",
+            "https://placehold.co/400x800"
+          ],
+          "liveLink": null,
+          "githubLink": "https://github.com/example/bobazzar",
+          "downloadLink": "#download"
+        }
+      ]
+    },
+    {
+      "company": "Supertech",
+      "year": "2015-2016",
+      "projects": [
+        {
+          "id": "publitools",
+          "name": "Publitools",
+          "description": "Media streaming application with background playback functionality.",
+          "details": "YouTube background playback & MP3 conversion.",
+          "technologies": ["Java", "ExoPlayer", "Media Codecs", "Background Services"],
+          "screenshots": [
+            "https://placehold.co/400x800",
+            "https://placehold.co/400x800"
+          ],
+          "liveLink": null,
+          "githubLink": "https://github.com/example/publitools",
+          "downloadLink": "#download"
+        },
+        {
+          "id": "almadina",
+          "name": "Al Madina FM",
+          "description": "Radio streaming application with schedule and notifications.",
+          "details": "Live streaming app for Al Madina FM radio.",
+          "technologies": ["Java", "Media Streaming", "Notifications API", "ExoPlayer"],
+          "screenshots": [
+            "https://placehold.co/400x800",
+            "https://placehold.co/400x800"
+          ],
+          "liveLink": "https://play.google.com/store",
+          "githubLink": "https://github.com/example/almadina",
+          "downloadLink": null
+        }
+      ]
+    }
+  ]
+}
