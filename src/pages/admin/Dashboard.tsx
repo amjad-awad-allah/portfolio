@@ -27,6 +27,7 @@ const AdminDashboard = () => {
     { name: "Experience", icon: Briefcase, color: "text-green-500", count: "4+", path: "/admin/experience" },
     { name: "Certifications", icon: Award, color: "text-purple-500", count: "10+", path: "/admin/certifications" },
     { name: "Personal Info", icon: User, color: "text-orange-500", count: "Updated", path: "/admin/info" },
+    { name: "Analytics", icon: Users, color: "text-red-500", count: "Live", path: "/admin/analytics" },
   ];
 
   return (

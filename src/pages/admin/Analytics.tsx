@@ -1,0 +1,179 @@
+
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { 
+  Loader2,
+  ArrowLeft,
+  Users,
+  Eye,
+  Trash2,
+  Settings
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
+import { format } from "date-fns";
+
+const AdminAnalytics = () => {
+  const [visits, setVisits] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isExcluded, setIsExcluded] = useState(localStorage.getItem("exclude_analytics") === "true");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchVisits();
+  }, []);
+
+  const fetchVisits = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from("site_visits")
+      .select("*")
+      .order("visited_at", { ascending: false })
+      .limit(100);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setVisits(data || []);
+    }
+    setIsLoading(false);
+  };
+
+  const toggleExclusion = () => {
+    const newValue = !isExcluded;
+    localStorage.setItem("exclude_analytics", newValue.toString());
+    setIsExcluded(newValue);
+    toast({ 
+      title: newValue ? "Device Excluded" : "Device Included", 
+      description: newValue ? "Your visits will no longer be tracked." : "Your visits will now be tracked." 
+    });
+  };
+
+  const clearVisits = async () => {
+    if (!confirm("Are you sure you want to clear all visit history?")) return;
+    const { error } = await supabase.from("site_visits").delete().not("id", "is", null);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Success", description: "History cleared" });
+      setVisits([]);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background p-4 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/admin/dashboard")} className="mb-2 -ml-2">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+            <h1 className="text-3xl font-bold flex items-center gap-3">
+              <Users className="h-8 w-8 text-primary" />
+              Visitor Analytics
+            </h1>
+            <p className="text-muted-foreground mt-1">Track who visits your portfolio and when.</p>
+          </div>
+
+          <div className="flex gap-2">
+            <Button 
+              variant={isExcluded ? "default" : "outline"} 
+              size="sm" 
+              onClick={toggleExclusion}
+              className="gap-2"
+            >
+              <Settings className="h-4 w-4" />
+              {isExcluded ? "Un-exclude this device" : "Exclude this device"}
+            </Button>
+            <Button variant="destructive" size="sm" onClick={clearVisits}>
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear History
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="glass-card p-6 rounded-2xl border border-primary/5">
+            <div className="flex items-center gap-3 mb-2">
+              <Eye className="h-5 w-5 text-blue-500" />
+              <h3 className="font-medium">Total Visits</h3>
+            </div>
+            <p className="text-4xl font-bold">{visits.length}{visits.length >= 100 ? "+" : ""}</p>
+          </div>
+          <div className="glass-card p-6 rounded-2xl border border-primary/5">
+            <div className="flex items-center gap-3 mb-2">
+              <Users className="h-5 w-5 text-green-500" />
+              <h3 className="font-medium">Recent Visitors (Last 24h)</h3>
+            </div>
+            <p className="text-4xl font-bold">
+              {visits.filter(v => new Date(v.visited_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)).length}
+            </p>
+          </div>
+          <div className="glass-card p-6 rounded-2xl border border-primary/5">
+            <div className="flex items-center gap-3 mb-2">
+              <Settings className="h-5 w-5 text-orange-500" />
+              <h3 className="font-medium">Tracking Status</h3>
+            </div>
+            <p className={`text-xl font-bold ${isExcluded ? "text-destructive" : "text-green-500"}`}>
+              {isExcluded ? "Not Tracking You" : "Tracking All"}
+            </p>
+          </div>
+        </div>
+
+        <div className="glass-card rounded-xl overflow-hidden border border-primary/5">
+          {isLoading ? (
+            <div className="p-12 flex flex-col items-center justify-center gap-4 text-muted-foreground">
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <p>Loading analytics data...</p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Time</TableHead>
+                  <TableHead>Page</TableHead>
+                  <TableHead className="hidden md:table-cell">Browser / Device</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {visits.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center py-12 text-muted-foreground">
+                      No visits recorded yet.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  visits.map((visit) => (
+                    <TableRow key={visit.id} className="hover:bg-primary/5 transition-colors">
+                      <TableCell className="font-mono text-xs">
+                        {format(new Date(visit.visited_at), "PPP p")}
+                      </TableCell>
+                      <TableCell>
+                        <code className="text-xs bg-secondary px-1.5 py-0.5 rounded">{visit.page_path}</code>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell text-xs text-muted-foreground truncate max-w-[300px]">
+                        {visit.browser_info}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminAnalytics;
