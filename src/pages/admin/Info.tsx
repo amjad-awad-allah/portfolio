@@ -179,6 +179,48 @@ const AdminPersonalInfo = () => {
               </div>
             </div>
 
+            {/* Hero Skills Section */}
+            <div className="glass-card p-6 rounded-2xl border border-primary/5 space-y-6">
+              <h3 className="font-bold text-lg flex items-center gap-2">
+                <div className="bg-primary/20 p-1.5 rounded-lg">
+                  <svg className="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                Hero Profile Bubbles (Skills)
+              </h3>
+              <p className="text-sm text-muted-foreground">Change the text labels floating around your profile image.</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Bubble 1 (Top Left)</label>
+                  <HeroSkillInput 
+                    keyName="engineer_label" 
+                    defaultValue="AI Engineer"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Bubble 2 (Bottom)</label>
+                  <HeroSkillInput 
+                    keyName="machine_learning_label" 
+                    defaultValue="Machine Learning"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Bubble 3 (Top Right)</label>
+                  <HeroSkillInput 
+                    keyName="developer_label" 
+                    defaultValue="Full Stack Developer"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Bubble 4 (Far Right)</label>
+                  <HeroSkillInput 
+                    keyName="architect_label" 
+                    defaultValue="Software Architect"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="flex justify-end pt-4">
               <Button type="submit" size="lg" className="gap-2" disabled={isSaving}>
                 {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
@@ -200,5 +242,62 @@ const Globe = ({ className }: { className?: string }) => (
     <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
   </svg>
 );
+
+// Individual Input for Hero Skills that saves to static_content table
+const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultValue: string }) => {
+  const [text, setText] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    // Initial fetch for the key
+    const fetchValue = async () => {
+      const { data, error } = await supabase
+        .from('static_content')
+        .select('en_text')
+        .eq('content_key', keyName)
+        .single();
+      
+      if (!error && data) {
+        setText(data.en_text);
+      } else {
+        setText(defaultValue);
+      }
+    };
+    fetchValue();
+  }, [keyName, defaultValue]);
+
+  const handleBlur = async () => {
+    if (!text) return;
+    setIsUpdating(true);
+    try {
+      const { error } = await supabase
+        .from('static_content')
+        .update({ en_text: text, de_text: text }) // For now keeping both same or simple
+        .eq('content_key', keyName);
+      
+      if (error) throw error;
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <Input 
+        value={text} 
+        onChange={e => setText(e.target.value)} 
+        onBlur={handleBlur}
+        className={isUpdating ? "opacity-50" : ""}
+      />
+      {isUpdating && (
+        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default AdminPersonalInfo;
