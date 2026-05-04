@@ -10,7 +10,8 @@ import {
   User, 
   LogOut,
   Settings,
-  Globe
+  Globe,
+  Users
 } from "lucide-react";
 import { motion } from "framer-motion";
 
