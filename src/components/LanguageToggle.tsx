@@ -50,44 +50,20 @@ const LanguageToggle = () => {
         <Button
           variant="ghost"
           size="sm"
-          className={`flex items-center gap-1 sm:gap-2 text-sm font-medium transition-colors hover:bg-secondary/30 ${isMobile ? 'px-1.5 h-9 w-9 rounded-md' : ''}`}
-        >
-          {isMobile ? (
-            <Globe className="h-5 w-5 text-primary" />
-          ) : (
-            <>
-              <Globe className="h-4 w-4" />
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.span 
-                  key={language}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  transition={{ duration: 0.2 }}
-                  className="hidden sm:inline-block"
-                >
-                  {currentLang.label}
-                </motion.span>
-              </AnimatePresence>
-              <motion.span 
-                className={`w-6 h-6 flex items-center justify-center rounded-full text-xs shadow-sm border border-white/20`}
-                style={{ 
-                  backgroundColor: language === 'en' ? '#007B8F' : '#00A5B5',
-                  color: '#FFFFFF'
-                }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                initial={{ backgroundColor: language === 'en' ? '#007B8F' : '#00A5B5' }}
-                animate={{ backgroundColor: language === 'en' ? '#007B8F' : '#00A5B5' }}
-                transition={{ duration: 0.2 }}
-              >
-                {currentLang.flag}
-              </motion.span>
-            </>
+          className={cn(
+            "flex items-center gap-2 text-sm font-medium transition-all hover:bg-secondary/30",
+            isMobile ? "px-2 h-9 w-9 rounded-md" : "px-3"
           )}
+        >
+          <Globe className="h-4 w-4 text-primary" />
+          {!isMobile && <span>{currentLang.label}</span>}
+          <span className="ml-1">{currentLang.flag}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={isMobile ? "center" : "end"} className="w-36 sm:w-48 animate-scale-in bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg border border-white/20 dark:border-gray-800/50">
+      <DropdownMenuContent 
+        align={isMobile ? "center" : "end"} 
+        className="z-[101] w-36 sm:w-48 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-xl border border-primary/20"
+      >
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
