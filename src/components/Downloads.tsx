@@ -74,7 +74,7 @@ const Downloads = () => {
                         size="lg"
                         className="w-full sm:w-auto group relative overflow-hidden"
                       >
-                        <a href={personalInfo.cv_en} download>
+                        <a href={personalInfo.cv_en} target="_blank" rel="noopener noreferrer">
                           <span className="relative z-10 flex items-center">
                             <Download className="mr-2 h-5 w-5 group-hover:-translate-y-1 transition-transform" />
                             {getText('english_cv', 'English CV')}
@@ -90,7 +90,7 @@ const Downloads = () => {
                         size="lg"
                         className="w-full sm:w-auto group border-2 border-primary/40 hover:bg-primary/10"
                       >
-                        <a href={personalInfo.cv_de} download>
+                        <a href={personalInfo.cv_de} target="_blank" rel="noopener noreferrer">
                           <Download className="mr-2 h-5 w-5 group-hover:-translate-y-1 transition-transform" />
                           {getText('german_cv', 'German CV')}
                         </a>
