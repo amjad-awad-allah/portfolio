@@ -29,28 +29,17 @@ const queryClient = new QueryClient({
   },
 });
 
-// Debug mode with improved logging
-const DEBUG_MODE = true;
+// Debug mode disabled for production stability
+const DEBUG_MODE = false;
 
 const Index = () => {
   const isMobile = useIsMobile();
 
   useEffect(() => {
     if (DEBUG_MODE) {
-      console.log("%c🚀 Portfolio Debug Mode Enabled", "font-weight: bold; font-size: 14px; color: #005F73;");
-      console.log("%c📱 Mobile view:", isMobile ? "Yes" : "No");
-      console.log("%c📊 Static Content: Initialized from database", "font-weight: bold; color: #10B981;");
-      
-      // Debug static content for main sections
-      const debugContent = async () => {
-        await debugStaticContent('hero');
-        await debugStaticContent('about');
-        await debugStaticContent('downloads');
-        await debugStaticContent('contact');
-        await debugStaticContent('footer');
-      };
-      
-      debugContent();
+      // ... debug logging ...
+    }
+  }, [isMobile]);
       
       // Enhanced performance monitoring
       const startTime = performance.now();
@@ -130,30 +119,44 @@ const Index = () => {
     }
   }, [isMobile]);
 
+  useEffect(() => {
+    const trackVisit = async () => {
+      try {
+        const isExcluded = localStorage.getItem("exclude_analytics") === "true";
+        if (isExcluded) return;
+
+        await supabase.from("site_visits").insert([{
+          page_path: window.location.pathname,
+          browser_info: navigator.userAgent,
+        }]);
+      } catch (e) {
+        // Ignore errors
+      }
+    };
+    trackVisit();
+  }, []);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#F3F6F9] via-[#F3F6F9] to-[#E8ECF1] dark:from-[#1A2B36] dark:via-[#1A2B36] dark:to-[#223A47]">
-          <Preloader />
-          <Navbar />
-          <main className="mt-16 sm:mt-20 space-y-0">
-            <Hero />
-            <About />
-            <Certifications />
-            <Experience />
-            <Projects />
-            <LanguageSkills />
-            <Hobbies />
-            <Downloads />
-            <Contact />
-          </main>
-          <Footer />
-          <ScrollToTop />
-          <Toaster />
-        </div>
-      </LanguageProvider>
-      {DEBUG_MODE && <ReactQueryDevtools initialIsOpen={false} />}
-    </QueryClientProvider>
+    <LanguageProvider>
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#F3F6F9] via-[#F3F6F9] to-[#E8ECF1] dark:from-[#1A2B36] dark:via-[#1A2B36] dark:to-[#223A47]">
+        <Preloader />
+        <Navbar />
+        <main className="mt-16 sm:mt-20 space-y-0">
+          <Hero />
+          <About />
+          <Certifications />
+          <Experience />
+          <Projects />
+          <LanguageSkills />
+          <Hobbies />
+          <Downloads />
+          <Contact />
+        </main>
+        <Footer />
+        <ScrollToTop />
+        <Toaster />
+      </div>
+    </LanguageProvider>
   );
 };
 

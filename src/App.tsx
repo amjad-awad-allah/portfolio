@@ -19,25 +19,6 @@ import { ProtectedRoute } from "./components/admin/ProtectedRoute";
 const queryClient = new QueryClient();
 
 const App = () => {
-  useEffect(() => {
-    const trackVisit = async () => {
-      // Check if this device should be excluded
-      const isExcluded = localStorage.getItem("exclude_analytics") === "true";
-      if (isExcluded) return;
-
-      try {
-        await supabase.from("site_visits").insert([{
-          page_path: window.location.pathname,
-          browser_info: navigator.userAgent,
-        }]);
-      } catch (error) {
-        // Silently fail to not interrupt user experience
-      }
-    };
-
-    trackVisit();
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
