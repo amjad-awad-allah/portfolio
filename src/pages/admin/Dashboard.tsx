@@ -93,13 +93,13 @@ const AdminDashboard = () => {
           <div className="glass-card p-6 rounded-2xl border border-primary/5">
             <h3 className="font-bold text-xl mb-4">Quick Actions</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Button variant="outline" className="h-16 justify-start gap-4 p-4 border-dashed">
+              <Button variant="outline" className="h-16 justify-start gap-4 p-4 border-dashed" onClick={() => navigate("/admin/projects")}>
                 <div className="bg-primary/10 p-2 rounded-lg">
                   <FolderKanban className="h-5 w-5 text-primary" />
                 </div>
                 Add New Project
               </Button>
-              <Button variant="outline" className="h-16 justify-start gap-4 p-4 border-dashed">
+              <Button variant="outline" className="h-16 justify-start gap-4 p-4 border-dashed" onClick={() => navigate("/admin/certifications")}>
                 <div className="bg-primary/10 p-2 rounded-lg">
                   <Award className="h-5 w-5 text-primary" />
                 </div>
@@ -114,6 +114,15 @@ const AdminDashboard = () => {
             </div>
             <h3 className="font-bold">Recent Activity</h3>
             <p className="text-sm text-muted-foreground">Detailed logs will appear here as you make changes.</p>
+          </div>
+        </div>
+
+        {/* Version Footer */}
+        <div className="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4 opacity-50">
+          <p className="text-xs font-medium">Amjad Portfolio CMS &bull; All rights reserved</p>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] uppercase tracking-widest font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">Stable</span>
+            <span className="text-xs font-mono">v1.2.0</span>
           </div>
         </div>
       </main>
