@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { motion } from "framer-motion";
 import { Code, Database, Terminal, Layers, ChevronRight } from "lucide-react";
@@ -6,6 +7,35 @@ import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStaticContent } from "@/hooks/use-static-content";
 import { Button } from "@/components/ui/button";
+
+const About = () => {
+  const { t, language } = useLanguage();
+  const { data: educationData, isLoading: isEducationLoading } = useEducation();
+  const { getText } = useStaticContent('about');
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      return format(new Date(dateString), "MMM yyyy");
+    } catch (e) {
+      return dateString;
+    }
+  };
 
   // Interactive Tech Stack logic
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
@@ -19,7 +49,7 @@ import { Button } from "@/components/ui/button";
     { 
       name: getText('ai_ml', 'AI Expert'), 
       icon: Terminal,
-      description: language === 'en' ? 'Specializing in LLMs, prompt engineering, and AI integration.' : 'Spezialisierung على LLMs, Prompt Engineering und KI-Integration.'
+      description: language === 'en' ? 'Specializing in LLMs, prompt engineering, and AI integration.' : 'Spezialisierung auf LLMs, Prompt Engineering und KI-Integration.'
     },
     { 
       name: getText('db_management', 'Database Management'), 
