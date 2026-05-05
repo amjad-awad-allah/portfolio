@@ -93,13 +93,13 @@ const AdminDashboard = () => {
           <div className="glass-card p-6 rounded-2xl border border-primary/5">
             <h3 className="font-bold text-xl mb-4">Quick Actions</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Button variant="outline" className="h-16 justify-start gap-4 p-4 border-dashed" onClick={() => navigate("/admin/projects")}>
+              <Button variant="outline" className="h-16 justify-start gap-4 p-4 border-dashed" onClick={() => navigate("/admin/projects?add=true")}>
                 <div className="bg-primary/10 p-2 rounded-lg">
                   <FolderKanban className="h-5 w-5 text-primary" />
                 </div>
                 Add New Project
               </Button>
-              <Button variant="outline" className="h-16 justify-start gap-4 p-4 border-dashed" onClick={() => navigate("/admin/certifications")}>
+              <Button variant="outline" className="h-16 justify-start gap-4 p-4 border-dashed" onClick={() => navigate("/admin/certifications?add=true")}>
                 <div className="bg-primary/10 p-2 rounded-lg">
                   <Award className="h-5 w-5 text-primary" />
                 </div>

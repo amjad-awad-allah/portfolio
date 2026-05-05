@@ -42,6 +42,18 @@ const AdminProjects = () => {
 
   useEffect(() => {
     fetchProjects();
+    
+    // Check if we should open the "Add" dialog automatically
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("add") === "true") {
+      setEditingProject({ 
+        project_name: "", 
+        description_en: "", 
+        description_de: "", 
+        technologies_used: [],
+        achievements: [] 
+      });
+    }
   }, []);
 
   const fetchProjects = async () => {

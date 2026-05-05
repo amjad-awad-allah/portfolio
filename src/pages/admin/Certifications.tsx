@@ -43,6 +43,18 @@ const AdminCertifications = () => {
 
   useEffect(() => {
     fetchCerts();
+
+    // Check if we should open the "Add" dialog automatically
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("add") === "true") {
+      setEditingCert({ 
+        certification_name_en: "", 
+        certification_name_de: "", 
+        issuing_organization: "",
+        date_obtained: new Date().toISOString().split('T')[0],
+        is_featured: false
+      });
+    }
   }, []);
 
   const fetchCerts = async () => {
