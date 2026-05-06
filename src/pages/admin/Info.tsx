@@ -255,7 +255,7 @@ const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultVal
         .from('static_content')
         .select('en_text')
         .eq('content_key', keyName)
-        .single();
+        .maybeSingle();
       
       if (!error && data) {
         setText(data.en_text);
@@ -272,8 +272,12 @@ const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultVal
     try {
       const { error } = await supabase
         .from('static_content')
-        .update({ en_text: text, de_text: text }) // For now keeping both same or simple
-        .eq('content_key', keyName);
+        .upsert({ 
+          content_key: keyName,
+          en_text: text, 
+          de_text: text,
+          section: 'hero'
+        }, { onConflict: 'content_key' });
       
       if (error) throw error;
     } catch (err) {
