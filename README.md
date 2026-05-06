@@ -20,12 +20,13 @@
 ## ✨ Key Features
 
 ### 🎨 Premium UI/UX
+- **Interactive Hero**: Dynamic "Skill Bubbles" that can be individually toggled from the admin panel.
 - **3D Tilt Effects**: Interactive 3D cards for projects and certifications using `framer-motion`.
 - **Dynamic Preloader**: Professional entry animation with technical theme.
 - **Glassmorphism Design**: Modern, sleek aesthetics with dark/light mode support.
-- **Micro-Animations**: Smooth transitions and interactive elements for a "WOW" factor.
 
 ### 🛠️ Integrated Admin CMS (Backend)
+- **Granular Control**: Manage individual visibility of hero elements and section content.
 - **Projects Management**: Add, edit, or delete projects with multi-language support.
 - **Experience Timeline**: Manage professional history and roles.
 - **Certification Center**: Track and feature professional credentials and Credly badges.
@@ -33,12 +34,55 @@
 
 ### 🌍 Internationalization
 - Full support for **English** and **German** languages.
-- Dynamic content fetching based on language selection.
+- Intelligent language toggle with smooth transition animations.
 
-### 🛡️ Security & Performance
-- **Protected Routes**: Secure admin area using Supabase Authentication.
-- **Vite-Powered**: Ultra-fast build times and performance optimization.
-- **Netlify Redirects**: Configured for seamless SPA routing.
+---
+
+## 📊 Database Schema (Supabase / PostgreSQL)
+
+The application uses a relational database structure designed for high performance and scalability. Below is the entity relationship model:
+
+```mermaid
+erDiagram
+    PERSONAL_INFO ||--o{ PROFESSIONAL_EXPERIENCE : "has"
+    PROFESSIONAL_EXPERIENCE ||--o{ PROJECTS : "contains"
+    CERTIFICATIONS }|--|| PERSONAL_INFO : "belongs_to"
+    STATIC_CONTENT {
+        int id
+        string content_key
+        string en_text
+        string de_text
+        string section
+    }
+    PERSONAL_INFO {
+        string name
+        string email
+        string cv_en
+        string cv_de
+        string github_url
+        string linkedin_url
+    }
+    PROJECTS {
+        string project_name
+        string description_en
+        string[] technologies_used
+        string image_url
+    }
+    SITE_VISITS {
+        int id
+        timestamp created_at
+        string page_path
+        string browser_info
+    }
+```
+
+### Table Details:
+- **`personal_info`**: Stores the primary identity, contact details, and social links.
+- **`professional_experience`**: Manages the career timeline and role descriptions.
+- **`projects`**: Contains project details, tech stacks (JSONB), and media links.
+- **`certifications`**: Stores professional credentials, Credly badge URLs, and verification links.
+- **`static_content`**: A flexible key-value store for UI text, enabling dynamic updates for hero labels and visibility settings.
+- **`site_visits`**: Internal analytics table to track page views and visitor demographics.
 
 ---
 
@@ -46,7 +90,7 @@
 
 - **Frontend**: React 18, TypeScript, Tailwind CSS.
 - **Animations**: Framer Motion, Lucide Icons.
-- **Backend/DB**: Supabase (PostgreSQL).
+- **Backend/DB**: Supabase (PostgreSQL) with Realtime updates.
 - **Deployment**: Netlify with custom domain integration.
 - **UI Components**: shadcn/ui.
 
@@ -61,7 +105,7 @@
 ### Installation
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/amjad-awad-allah/portfolio-.git
+   git clone https://github.com/amjad-awad-allah/portfolio.git
    ```
 
 2. **Install dependencies**
@@ -80,16 +124,6 @@
    ```bash
    npm run dev
    ```
-
----
-
-## 📊 Database Schema
-The project relies on a robust PostgreSQL schema on Supabase:
-- `personal_info`: Main identity and social links.
-- `professional_experience`: Career timeline.
-- `projects`: Portfolio works with tech stacks and images.
-- `certifications`: Professional badges and verify links.
-- `education`: Academic background.
 
 ---
 
