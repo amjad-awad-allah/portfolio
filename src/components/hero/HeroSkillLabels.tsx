@@ -34,12 +34,23 @@ export const SkillLabel = ({ color, text, rotate, delay }: SkillLabelProps) => {
 };
 
 export const useSkillLabels = () => {
-  const { getText } = useStaticContent('hero');
+  const { content } = useStaticContent('hero');
   
-  return [
-    { color: "#8B5CF6", text: getText('engineer_label', 'AI Engineer'), rotate: -45, delay: 0.1 }, // Purple
-    { color: "#06B6D4", text: getText('machine_learning_label', 'Machine Learning'), rotate: 0, delay: 0.2 }, // Cyan
-    { color: "#F97316", text: getText('developer_label', 'Full Stack Developer'), rotate: 45, delay: 0.3 }, // Orange
-    { color: "#10B981", text: getText('architect_label', 'Software Architect'), rotate: 90, delay: 0.4 }, // Green
+  const getBubbleData = (key: string, defaultText: string, color: string, rotate: number, delay: number) => {
+    const item = content.find(c => c.content_key === key);
+    // If not found or de_text is not 'false', it's visible
+    const isVisible = item ? item.de_text !== 'false' : true;
+    const text = item ? item.en_text : defaultText;
+    
+    return { color, text, rotate, delay, isVisible };
+  };
+
+  const allLabels = [
+    getBubbleData('engineer_label', 'AI Engineer', "#8B5CF6", -45, 0.1),
+    getBubbleData('machine_learning_label', 'Machine Learning', "#06B6D4", 0, 0.2),
+    getBubbleData('developer_label', 'Full Stack Developer', "#F97316", 45, 0.3),
+    getBubbleData('architect_label', 'Software Architect', "#10B981", 90, 0.4),
   ];
+
+  return allLabels.filter(label => label.isVisible);
 };

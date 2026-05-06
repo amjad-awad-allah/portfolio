@@ -181,21 +181,13 @@ const AdminPersonalInfo = () => {
 
             {/* Hero Skills Section */}
             <div className="glass-card p-6 rounded-2xl border border-primary/5 space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-lg flex items-center gap-2">
-                    <div className="bg-primary/20 p-1.5 rounded-lg">
-                      <svg className="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-                    </div>
-                    Hero Profile Bubbles (Skills)
-                  </h3>
-                  <p className="text-sm text-muted-foreground">Change the text labels floating around your profile image.</p>
+              <h3 className="font-bold text-lg flex items-center gap-2">
+                <div className="bg-primary/20 p-1.5 rounded-lg">
+                  <svg className="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
                 </div>
-                <div className="flex items-center gap-3 bg-secondary/50 p-3 rounded-xl border border-primary/10">
-                  <span className="text-sm font-semibold">Visibility</span>
-                  <HeroBubblesToggle />
-                </div>
-              </div>
+                Hero Profile Bubbles (Skills)
+              </h3>
+              <p className="text-sm text-muted-foreground">Change the text labels floating around your profile image. Use the Eye icon to hide/show each bubble individually.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -254,21 +246,24 @@ const Globe = ({ className }: { className?: string }) => (
 // Individual Input for Hero Skills that saves to static_content table
 const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultValue: string }) => {
   const [text, setText] = useState("");
+  const [show, setShow] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     // Initial fetch for the key
     const fetchValue = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('static_content')
-        .select('en_text')
+        .select('en_text, de_text') // de_text will store visibility
         .eq('content_key', keyName)
         .maybeSingle();
       
-      if (!error && data) {
+      if (data) {
         setText(data.en_text);
+        setShow(data.de_text !== 'false'); // default to true
       } else {
         setText(defaultValue);
+        setShow(true);
       }
     };
     fetchValue();
@@ -276,9 +271,18 @@ const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultVal
 
   const handleBlur = async () => {
     if (!text) return;
+    saveData(text, show);
+  };
+
+  const toggleVisibility = () => {
+    const nextShow = !show;
+    setShow(nextShow);
+    saveData(text, nextShow);
+  };
+
+  const saveData = async (newText: string, newShow: boolean) => {
     setIsUpdating(true);
     try {
-      // First, check if the record exists to get its ID
       const { data: existing } = await supabase
         .from('static_content')
         .select('id')
@@ -286,23 +290,22 @@ const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultVal
         .maybeSingle();
 
       if (existing) {
-        // Update existing record
-        const { error } = await supabase
+        await supabase
           .from('static_content')
-          .update({ en_text: text, de_text: text })
+          .update({ 
+            en_text: newText, 
+            de_text: String(newShow) 
+          })
           .eq('id', existing.id);
-        if (error) throw error;
       } else {
-        // Insert new record
-        const { error } = await supabase
+        await supabase
           .from('static_content')
           .insert([{ 
             content_key: keyName, 
-            en_text: text, 
-            de_text: text, 
+            en_text: newText, 
+            de_text: String(newShow), 
             section: 'hero' 
           }]);
-        if (error) throw error;
       }
     } catch (err) {
       console.error("Save error:", err);
@@ -312,86 +315,37 @@ const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultVal
   };
 
   return (
-    <div className="relative">
-      <Input 
-        value={text} 
-        onChange={e => setText(e.target.value)} 
-        onBlur={handleBlur}
-        className={isUpdating ? "opacity-50" : ""}
-      />
-      {isUpdating && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+    <div className="flex items-center gap-2">
+      <div className="relative flex-grow">
+        <Input 
+          value={text} 
+          onChange={e => setText(e.target.value)} 
+          onBlur={handleBlur}
+          className={isUpdating ? "opacity-50" : ""}
+        />
+        {isUpdating && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <Loader2 className="h-3 w-3 animate-spin text-primary" />
+          </div>
+        )}
+      </div>
+      <Button
+        type="button"
+        variant={show ? "default" : "outline"}
+        size="icon"
+        className="h-10 w-10 shrink-0"
+        onClick={toggleVisibility}
+        title={show ? "Visible" : "Hidden"}
+      >
+        <div className="flex flex-col items-center">
+          {show ? (
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          ) : (
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          )}
         </div>
-      )}
+      </Button>
     </div>
-  );
-};
-
-// Toggle component for Hero Bubbles visibility
-const HeroBubblesToggle = () => {
-  const [show, setShow] = useState(true);
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  useEffect(() => {
-    const fetchValue = async () => {
-      const { data } = await supabase
-        .from('static_content')
-        .select('en_text')
-        .eq('content_key', 'show_hero_bubbles')
-        .maybeSingle();
-      
-      if (data) {
-        setShow(data.en_text === 'true');
-      }
-    };
-    fetchValue();
-  }, []);
-
-  const handleToggle = async () => {
-    const newValue = !show;
-    setShow(newValue);
-    setIsUpdating(true);
-    try {
-      const { data: existing } = await supabase
-        .from('static_content')
-        .select('id')
-        .eq('content_key', 'show_hero_bubbles')
-        .maybeSingle();
-
-      if (existing) {
-        await supabase
-          .from('static_content')
-          .update({ en_text: String(newValue) })
-          .eq('id', existing.id);
-      } else {
-        await supabase
-          .from('static_content')
-          .insert([{ 
-            content_key: 'show_hero_bubbles', 
-            en_text: String(newValue), 
-            section: 'hero' 
-          }]);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  return (
-    <Button 
-      type="button"
-      variant={show ? "default" : "outline"} 
-      size="sm" 
-      onClick={handleToggle}
-      disabled={isUpdating}
-      className="gap-2 h-8"
-    >
-      {isUpdating && <Loader2 className="h-3 w-3 animate-spin" />}
-      {show ? "Visible" : "Hidden"}
-    </Button>
   );
 };
 

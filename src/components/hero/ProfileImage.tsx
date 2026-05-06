@@ -14,23 +14,6 @@ type ProfileImageProps = {
 export const ProfileImage = ({ isLoading, profileImageUrl, name }: ProfileImageProps) => {
   const skillLabels = useSkillLabels();
   
-  const [showBubbles, setShowBubbles] = useState(true);
-
-  useEffect(() => {
-    const fetchVisibility = async () => {
-      const { data } = await supabase
-        .from('static_content')
-        .select('en_text')
-        .eq('content_key', 'show_hero_bubbles')
-        .maybeSingle();
-      
-      if (data) {
-        setShowBubbles(data.en_text === 'true');
-      }
-    };
-    fetchVisibility();
-  }, []);
-  
   if (isLoading) {
     return <Skeleton className="rounded-full w-64 h-64" />;
   }
@@ -45,7 +28,7 @@ export const ProfileImage = ({ isLoading, profileImageUrl, name }: ProfileImageP
       
       <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-pulse-slow"></div>
       
-      {showBubbles && skillLabels.map((label, index) => (
+      {skillLabels.map((label, index) => (
         <SkillLabel 
           key={index}
           color={label.color}
