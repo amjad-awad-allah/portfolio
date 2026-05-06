@@ -26,22 +26,7 @@ export function useStaticContent(section: string) {
       try {
         setIsLoading(true);
         
-        // Check if we already have this section cached
-        if (contentCache[section]) {
-          setContent(contentCache[section]);
-          
-          // Create a map of content_key to the appropriate language text
-          const newContentMap: Record<string, string> = {};
-          contentCache[section].forEach(item => {
-            newContentMap[item.content_key] = language === 'en' ? item.en_text : item.de_text;
-          });
-          
-          setContentMap(newContentMap);
-          setIsLoading(false);
-          return;
-        }
-        
-        // If not cached, fetch from database
+        // Fetch fresh from database every time to ensure updates are seen
         const { data, error } = await supabase
           .from('static_content')
           .select('*')

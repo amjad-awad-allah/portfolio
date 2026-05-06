@@ -187,7 +187,7 @@ const AdminPersonalInfo = () => {
                 </div>
                 Hero Profile Bubbles (Skills)
               </h3>
-              <p className="text-sm text-muted-foreground">Change the text labels floating around your profile image. Use the Eye icon to hide/show each bubble individually.</p>
+              <p className="text-sm text-muted-foreground">Change labels around your image. <span className="text-primary font-medium">Changes are saved automatically</span> when you finish typing or toggle visibility.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
