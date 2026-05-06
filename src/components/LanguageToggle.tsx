@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 const LanguageToggle = () => {
   const { language, setLanguage, isReady } = useLanguage();
