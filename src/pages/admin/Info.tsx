@@ -270,18 +270,34 @@ const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultVal
     if (!text) return;
     setIsUpdating(true);
     try {
-      const { error } = await supabase
+      // First, check if the record exists to get its ID
+      const { data: existing } = await supabase
         .from('static_content')
-        .upsert({ 
-          content_key: keyName,
-          en_text: text, 
-          de_text: text,
-          section: 'hero'
-        }, { onConflict: 'content_key' });
-      
-      if (error) throw error;
+        .select('id')
+        .eq('content_key', keyName)
+        .maybeSingle();
+
+      if (existing) {
+        // Update existing record
+        const { error } = await supabase
+          .from('static_content')
+          .update({ en_text: text, de_text: text })
+          .eq('id', existing.id);
+        if (error) throw error;
+      } else {
+        // Insert new record
+        const { error } = await supabase
+          .from('static_content')
+          .insert([{ 
+            content_key: keyName, 
+            en_text: text, 
+            de_text: text, 
+            section: 'hero' 
+          }]);
+        if (error) throw error;
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Save error:", err);
     } finally {
       setIsUpdating(false);
     }
