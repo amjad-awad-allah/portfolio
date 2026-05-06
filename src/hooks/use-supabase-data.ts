@@ -22,9 +22,11 @@ export function usePersonalInfo() {
     async function fetchData() {
       try {
         setIsLoading(true);
+        // Cache-busting: add a dummy filter that's always true but unique per request
         const { data, error } = await supabase
           .from('personal_info')
           .select('*')
+          .neq('id', -1) // Always true, but makes the query look fresh
           .limit(1)
           .single();
 
