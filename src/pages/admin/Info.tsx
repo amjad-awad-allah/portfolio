@@ -307,8 +307,10 @@ const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultVal
             section: 'hero' 
           }]);
       }
+      toast({ title: "Updated", description: `"${newText}" bubble updated successfully.` });
     } catch (err) {
       console.error("Save error:", err);
+      toast({ title: "Error", description: "Could not save changes.", variant: "destructive" });
     } finally {
       setIsUpdating(false);
     }
