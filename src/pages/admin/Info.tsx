@@ -181,13 +181,21 @@ const AdminPersonalInfo = () => {
 
             {/* Hero Skills Section */}
             <div className="glass-card p-6 rounded-2xl border border-primary/5 space-y-6">
-              <h3 className="font-bold text-lg flex items-center gap-2">
-                <div className="bg-primary/20 p-1.5 rounded-lg">
-                  <svg className="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-lg flex items-center gap-2">
+                    <div className="bg-primary/20 p-1.5 rounded-lg">
+                      <svg className="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    Hero Profile Bubbles (Skills)
+                  </h3>
+                  <p className="text-sm text-muted-foreground">Change the text labels floating around your profile image.</p>
                 </div>
-                Hero Profile Bubbles (Skills)
-              </h3>
-              <p className="text-sm text-muted-foreground">Change the text labels floating around your profile image.</p>
+                <div className="flex items-center gap-3 bg-secondary/50 p-3 rounded-xl border border-primary/10">
+                  <span className="text-sm font-semibold">Visibility</span>
+                  <HeroBubblesToggle />
+                </div>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -317,6 +325,73 @@ const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultVal
         </div>
       )}
     </div>
+  );
+};
+
+// Toggle component for Hero Bubbles visibility
+const HeroBubblesToggle = () => {
+  const [show, setShow] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    const fetchValue = async () => {
+      const { data } = await supabase
+        .from('static_content')
+        .select('en_text')
+        .eq('content_key', 'show_hero_bubbles')
+        .maybeSingle();
+      
+      if (data) {
+        setShow(data.en_text === 'true');
+      }
+    };
+    fetchValue();
+  }, []);
+
+  const handleToggle = async () => {
+    const newValue = !show;
+    setShow(newValue);
+    setIsUpdating(true);
+    try {
+      const { data: existing } = await supabase
+        .from('static_content')
+        .select('id')
+        .eq('content_key', 'show_hero_bubbles')
+        .maybeSingle();
+
+      if (existing) {
+        await supabase
+          .from('static_content')
+          .update({ en_text: String(newValue) })
+          .eq('id', existing.id);
+      } else {
+        await supabase
+          .from('static_content')
+          .insert([{ 
+            content_key: 'show_hero_bubbles', 
+            en_text: String(newValue), 
+            section: 'hero' 
+          }]);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return (
+    <Button 
+      type="button"
+      variant={show ? "default" : "outline"} 
+      size="sm" 
+      onClick={handleToggle}
+      disabled={isUpdating}
+      className="gap-2 h-8"
+    >
+      {isUpdating && <Loader2 className="h-3 w-3 animate-spin" />}
+      {show ? "Visible" : "Hidden"}
+    </Button>
   );
 };
 
