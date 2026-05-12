@@ -244,8 +244,8 @@ export const translations: Translations = {
     de: "Ich bin immer offen für die Diskussion neuer Projekte, kreativer Ideen oder Möglichkeiten, Teil Ihrer Vision zu sein.",
   },
   "contact.reachOut": {
-    en: "Feel free to reach out through any of the channels above or by filling out the contact form.",
-    de: "Zögere nicht, über einen der oben genannten Kanäle oder über das Kontaktformular mit mir in Verbindung zu treten.",
+    en: "Reach out via the channels below or the contact form.",
+    de: "Kontaktieren Sie mich über die unten stehenden Kanäle oder das Formular.",
   },
   
   // Theme
