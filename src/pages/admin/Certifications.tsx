@@ -60,11 +60,14 @@ const AdminCertifications = () => {
     const { data, error } = await supabase
       .from("certifications")
       .select("*")
+      .neq("id", -1)
       .order("date_obtained", { ascending: false });
 
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
+      console.log("Certs refreshed from DB:");
+      console.table(data);
       setCerts(data || []);
     }
     setIsLoading(false);
@@ -76,8 +79,20 @@ const AdminCertifications = () => {
     setIsSaving(true);
 
     try {
-      console.log("Saving certificate:", editingCert);
+      console.log("Saving certificate. ID:", editingCert.id, "Type:", typeof editingCert.id);
+      console.log("Data to save:", {
+        certification_name_en: editingCert.certification_name_en,
+        certification_name_de: editingCert.certification_name_de,
+        issuing_organization: editingCert.issuing_organization,
+        date_obtained: editingCert.date_obtained,
+        certificate_url: editingCert.certificate_url,
+        badge_image_url: editingCert.badge_image_url,
+        credly_url: editingCert.credly_url,
+        is_featured: editingCert.is_featured,
+      });
+
       if (editingCert.id) {
+        const targetId = Number(editingCert.id);
         const response = await supabase
           .from("certifications")
           .update({
@@ -90,22 +105,17 @@ const AdminCertifications = () => {
             credly_url: editingCert.credly_url,
             is_featured: editingCert.is_featured,
           })
-          .eq("id", editingCert.id);
+          .eq("id", targetId);
         
         console.log("Supabase Update Response:", response);
-        if (response.error) {
-          console.error("Supabase update error:", response.error);
-          throw response.error;
-        }
+        if (response.error) throw response.error;
         toast({ title: "Updated", description: "Certificate updated successfully" });
       } else {
         const { error } = await supabase
           .from("certifications")
           .insert([editingCert]);
-        if (error) {
-          console.error("Supabase insert error:", error);
-          throw error;
-        }
+        
+        if (error) throw error;
         toast({ title: "Created", description: "Certificate added successfully" });
       }
       setEditingCert(null);

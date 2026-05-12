@@ -153,13 +153,15 @@ export function useEducation() {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    async function fetchData() {
+    const fetchEducation = async () => {
       try {
         setIsLoading(true);
+        // Cache-busting to ensure we get latest data after update
         const { data, error } = await supabase
-          .from('education')
-          .select('*')
-          .order('start_date', { ascending: false });
+          .from("education")
+          .select("*")
+          .neq("id", -1)
+          .order("start_date", { ascending: false });
 
         if (error) throw error;
         setData(data || []);
@@ -192,6 +194,7 @@ export function useCertifications() {
         const { data, error } = await supabase
           .from('certifications')
           .select('*')
+          .neq('id', -1) // Cache-busting
           .order('date_obtained', { ascending: false });
 
         if (error) throw error;

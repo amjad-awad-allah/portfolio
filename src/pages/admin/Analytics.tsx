@@ -239,6 +239,31 @@ const AdminAnalytics = () => {
             </Table>
           )}
         </div>
+        
+        {/* Debug Info Section */}
+        <div className="mt-12 p-4 bg-secondary/20 rounded-lg border border-dashed border-primary/20">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Debug Information</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px] font-mono">
+            <div className="flex justify-between p-1 bg-background/50 rounded">
+              <span className="text-muted-foreground">Domain:</span>
+              <span>{window.location.hostname}</span>
+            </div>
+            <div className="flex justify-between p-1 bg-background/50 rounded">
+              <span className="text-muted-foreground">Exclusion Key:</span>
+              <span className={localStorage.getItem("exclude_analytics") === "true" ? "text-green-500" : "text-destructive"}>
+                {localStorage.getItem("exclude_analytics") || "null"}
+              </span>
+            </div>
+            <div className="flex justify-between p-1 bg-background/50 rounded">
+              <span className="text-muted-foreground">User Agent:</span>
+              <span className="truncate max-w-[200px]">{navigator.userAgent}</span>
+            </div>
+            <div className="flex justify-between p-1 bg-background/50 rounded">
+              <span className="text-muted-foreground">Storage Supported:</span>
+              <span>{typeof localStorage !== 'undefined' ? "Yes" : "No"}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
