@@ -122,7 +122,7 @@ const AdminDashboard = () => {
           <p className="text-xs font-medium">Amjad Portfolio CMS &bull; All rights reserved</p>
           <div className="flex items-center gap-2">
             <span className="text-[10px] uppercase tracking-widest font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">Stable</span>
-            <span className="text-xs font-mono">v1.2.0</span>
+            <span className="text-xs font-mono">v1.3.1</span>
           </div>
         </div>
       </main>
