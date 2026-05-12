@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
+import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 
 const AdminAnalytics = () => {
@@ -32,37 +33,45 @@ const AdminAnalytics = () => {
     fetchVisits();
   }, []);
 
-  const markVisitsAsSeen = async (unseenIds: string[]) => {
-    if (unseenIds.length === 0) return;
+  const markVisitsAsSeen = async (unseenIds: any[]) => {
+    if (!unseenIds || unseenIds.length === 0) return;
     
+    console.log("Marking visits as seen:", unseenIds);
     const { error } = await supabase
       .from("site_visits")
       .update({ is_seen: true })
       .in("id", unseenIds);
       
-    if (error) console.error("Error marking visits as seen:", error);
+    if (error) {
+      console.error("Error marking visits as seen:", error);
+      // We don't show a toast here to avoid annoying the user on every page load
+    }
   };
 
   const fetchVisits = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from("site_visits")
-      .select("*")
-      .order("visited_at", { ascending: false })
-      .limit(100);
+    try {
+      const { data, error } = await supabase
+        .from("site_visits")
+        .select("*")
+        .order("visited_at", { ascending: false })
+        .limit(100);
 
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
+      if (error) throw error;
+
       setVisits(data || []);
       
       // Mark unseen visits as seen
-      const unseenIds = data?.filter(v => !v.is_seen).map(v => v.id) || [];
+      const unseenIds = data?.filter(v => v.is_seen === false || v.is_seen === null).map(v => v.id) || [];
       if (unseenIds.length > 0) {
-        markVisitsAsSeen(unseenIds);
+        await markVisitsAsSeen(unseenIds);
       }
+    } catch (error: any) {
+      console.error("Fetch error:", error);
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const toggleExclusion = () => {
@@ -170,14 +179,15 @@ const AdminAnalytics = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Time</TableHead>
-                  <TableHead>Page</TableHead>
-                  <TableHead className="hidden md:table-cell">Browser / Device</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Device</TableHead>
+                  <TableHead className="hidden md:table-cell">Details</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {visits.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center py-12 text-muted-foreground">
+                    <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
                       No visits recorded yet.
                     </TableCell>
                   </TableRow>
@@ -185,21 +195,32 @@ const AdminAnalytics = () => {
                   visits.map((visit) => (
                     <TableRow 
                       key={visit.id} 
-                      className={`transition-colors ${!visit.is_seen ? "bg-primary/10 hover:bg-primary/15 font-medium" : "hover:bg-primary/5"}`}
+                      className={`transition-colors ${visit.is_seen === false || visit.is_seen === null ? "bg-primary/10 hover:bg-primary/15 font-medium" : "hover:bg-primary/5"}`}
                     >
                       <TableCell className="font-mono text-xs">
                         <div className="flex items-center gap-2">
-                          {!visit.is_seen && (
+                          {(visit.is_seen === false || visit.is_seen === null) && (
                             <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
                           )}
-                          {format(new Date(visit.visited_at), "PPP p")}
+                          {format(new Date(visit.visited_at), "MMM d, HH:mm")}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <code className="text-xs bg-secondary px-1.5 py-0.5 rounded">{visit.page_path}</code>
+                        <div className="flex flex-col">
+                          <span className="text-xs font-semibold">{visit.country || "Unknown"}</span>
+                          <span className="text-[10px] text-muted-foreground">{visit.city || "Unknown"} ({visit.ip_address || "no-ip"})</span>
+                        </div>
                       </TableCell>
-                      <TableCell className="hidden md:table-cell text-xs text-muted-foreground truncate max-w-[300px]">
-                        {visit.browser_info}
+                      <TableCell>
+                        <Badge variant="secondary" className="text-[10px] uppercase">
+                          {visit.device_type || "Unknown"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="flex flex-col text-[10px] text-muted-foreground">
+                          <span>Lang: {visit.language || "N/A"}</span>
+                          <span>Res: {visit.screen_resolution || "N/A"}</span>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))

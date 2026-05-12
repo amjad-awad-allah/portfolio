@@ -45,12 +45,41 @@ const Index = () => {
         const isExcluded = localStorage.getItem("exclude_analytics") === "true";
         if (isExcluded) return;
 
+        // Get approximate location and IP via free service
+        let locationData = { ip: 'Unknown', city: 'Unknown', country: 'Unknown' };
+        try {
+          const response = await fetch('https://ipapi.co/json/');
+          if (response.ok) {
+            const data = await response.json();
+            locationData = {
+              ip: data.ip,
+              city: data.city,
+              country: data.country_name
+            };
+          }
+        } catch (e) {
+          console.error("Location fetch failed", e);
+        }
+
+        // Detect device info
+        const ua = navigator.userAgent;
+        let deviceType = "Desktop";
+        if (/tablet|ipad|playbook|silk/i.test(ua)) deviceType = "Tablet";
+        else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated/i.test(ua)) deviceType = "Mobile";
+
         await supabase.from("site_visits").insert([{
           page_path: window.location.pathname,
-          browser_info: navigator.userAgent,
+          browser_info: ua, // Keep original for reference
+          ip_address: locationData.ip,
+          city: locationData.city,
+          country: locationData.country,
+          device_type: deviceType,
+          screen_resolution: `${window.screen.width}x${window.screen.height}`,
+          language: navigator.language,
+          is_seen: false
         }]);
       } catch (e) {
-        // Ignore tracking errors
+        console.error("Tracking error:", e);
       }
     };
     trackVisit();
