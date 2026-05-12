@@ -62,8 +62,18 @@ const AdminPersonalInfo = () => {
 
       if (staticData) {
         const newBubbles = { ...bubbles };
+        const keysFound = new Set();
+        const duplicates: number[] = [];
+
         staticData.forEach(item => {
+          // If we find a duplicate key for the same section, mark it for deletion
+          if (keysFound.has(item.content_key)) {
+            duplicates.push(item.id);
+            return;
+          }
+
           if (newBubbles[item.content_key]) {
+            keysFound.add(item.content_key);
             newBubbles[item.content_key] = {
               text: item.en_text,
               show: item.de_text !== 'false',
@@ -71,9 +81,17 @@ const AdminPersonalInfo = () => {
             };
           }
         });
+
+        // Clean up duplicates if any
+        if (duplicates.length > 0) {
+          console.log("Cleaning up duplicate bubble keys:", duplicates);
+          await supabase.from('static_content').delete().in('id', duplicates);
+        }
+
         setBubbles(newBubbles);
       }
     } catch (error: any) {
+      console.error("Fetch error:", error);
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setIsLoading(false);

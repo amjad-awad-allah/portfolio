@@ -34,11 +34,16 @@ export const SkillLabel = ({ color, text, rotate, delay }: SkillLabelProps) => {
 };
 
 export const useSkillLabels = () => {
-  const { content } = useStaticContent('hero');
+  const { content, isLoading } = useStaticContent('hero');
+  
+  // Return empty while loading to avoid flashing default values
+  if (isLoading) return [];
   
   const getBubbleData = (key: string, defaultText: string, color: string, rotate: number, delay: number) => {
     const item = content.find(c => c.content_key === key);
-    // If not found or de_text is not 'false', it's visible
+    
+    // If we have an item, check if it's explicitly set to 'false'
+    // If we don't have an item yet, we'll show the default but keep it visible
     const isVisible = item ? item.de_text !== 'false' : true;
     const text = item ? item.en_text : defaultText;
     
