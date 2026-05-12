@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Image as ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Project } from "@/types/database";
 import { useLanguage } from "@/context/LanguageContext";
@@ -67,17 +67,33 @@ const ProjectCard = ({
     }}
     className={`glass-card group overflow-hidden rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full ${project.description_url ? 'cursor-pointer' : ''}`}
   >
-      {project.image_url && <div 
+      <div 
         style={{ transform: "translateZ(50px)" }}
-        className="w-full aspect-video overflow-hidden bg-muted relative"
+        className="w-full aspect-video overflow-hidden bg-secondary/30 relative flex-shrink-0"
       >
-          <img src={project.image_url} alt={project.project_name} className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110" />
+        {project.image_url ? (
+          <img 
+            src={project.image_url} 
+            alt={project.project_name} 
+            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110" 
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-secondary/20">
+            <div className="bg-primary/10 p-4 rounded-full">
+              <ImageIcon className="h-8 w-8 text-primary/40" />
+            </div>
+          </div>
+        )}
+        
+        {project.description_url && (
           <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors duration-300 flex items-center justify-center">
             <div className="bg-white/90 dark:bg-gray-900/90 p-2 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
               <ExternalLink className="h-5 w-5 text-primary" />
             </div>
           </div>
-        </div>}
+        )}
+      </div>
       
       <div className="p-6 flex-grow" style={{ transform: "translateZ(30px)" }}>
         <div className="flex items-start justify-between mb-2">

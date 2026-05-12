@@ -294,7 +294,8 @@ const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultVal
           .from('static_content')
           .update({ 
             en_text: newText, 
-            de_text: String(newShow) 
+            de_text: String(newShow),
+            section: 'hero' // Force section to hero to ensure it's found by the frontend
           })
           .eq('id', existing.id);
       } else {
