@@ -95,7 +95,8 @@ const AdminCertifications = () => {
         const targetId = Number(editingCert.id);
         const response = await supabase
           .from("certifications")
-          .update({
+          .upsert({
+            id: targetId,
             certification_name_en: editingCert.certification_name_en,
             certification_name_de: editingCert.certification_name_de,
             issuing_organization: editingCert.issuing_organization,
@@ -105,14 +106,12 @@ const AdminCertifications = () => {
             credly_url: editingCert.credly_url,
             is_featured: editingCert.is_featured,
           })
-          .eq("id", targetId)
-          .select()
-          .single();
+          .select();
         
-        console.log("Supabase Update Response:", response);
+        console.log("Supabase Upsert Response:", response);
         if (response.error) throw response.error;
-        console.log("Updated data from DB:", response.data);
-        toast({ title: "Updated", description: "Certificate updated successfully" });
+        console.log("Saved data from DB:", response.data);
+        toast({ title: "Success", description: "Certificate saved successfully" });
       } else {
         const { error } = await supabase
           .from("certifications")

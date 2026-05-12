@@ -20,7 +20,7 @@ const Index = () => {
   useEffect(() => {
     // Basic SEO and Meta setup
     document.title = "Amjad Awad-Allah | Software Developer & AI Specialist";
-    
+
     // Add meta description if missing
     let metaDescription = document.querySelector('meta[name="description"]');
     if (!metaDescription) {
@@ -41,8 +41,11 @@ const Index = () => {
         }
 
         const isExcluded = localStorage.getItem("exclude_analytics") === "true";
-        console.log("Analytics: Exclusion Status is", isExcluded);
-        if (isExcluded) return;
+        console.warn("Analytics: Visit tracking check. Excluded:", isExcluded);
+        if (isExcluded) {
+          console.log("Analytics: Tracking is DISABLED for this device.");
+          return;
+        }
 
         // Get approximate location and IP via free service
         let locationData = { ip: 'Unknown', city: 'Unknown', country: 'Unknown' };
