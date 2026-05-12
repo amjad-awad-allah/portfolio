@@ -11,35 +11,73 @@ import {
   Linkedin,
   Mail,
   MapPin,
-  Save
+  Save,
+  Globe
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { PersonalInfo } from "@/types/database";
 
+type BubbleState = {
+  text: string;
+  show: boolean;
+  id?: number;
+};
+
 const AdminPersonalInfo = () => {
   const [info, setInfo] = useState<Partial<PersonalInfo> | null>(null);
+  const [bubbles, setBubbles] = useState<Record<string, BubbleState>>({
+    engineer_label: { text: "AI Engineer", show: true },
+    machine_learning_label: { text: "Machine Learning", show: true },
+    developer_label: { text: "Full Stack Developer", show: true },
+    architect_label: { text: "Software Architect", show: true },
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchInfo();
+    fetchData();
   }, []);
 
-  const fetchInfo = async () => {
+  const fetchData = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from("personal_info")
-      .select("*")
-      .single();
+    try {
+      // Fetch Personal Info
+      const { data: infoData, error: infoError } = await supabase
+        .from("personal_info")
+        .select("*")
+        .single();
 
-    if (error) {
+      if (infoError) throw infoError;
+      setInfo(infoData);
+
+      // Fetch Bubbles (static_content)
+      const { data: staticData, error: staticError } = await supabase
+        .from("static_content")
+        .select("*")
+        .eq("section", "hero");
+
+      if (staticError) throw staticError;
+
+      if (staticData) {
+        const newBubbles = { ...bubbles };
+        staticData.forEach(item => {
+          if (newBubbles[item.content_key]) {
+            newBubbles[item.content_key] = {
+              text: item.en_text,
+              show: item.de_text !== 'false',
+              id: item.id
+            };
+          }
+        });
+        setBubbles(newBubbles);
+      }
+    } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      setInfo(data);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -48,7 +86,8 @@ const AdminPersonalInfo = () => {
     setIsSaving(true);
 
     try {
-      const { error } = await supabase
+      // 1. Save Personal Info
+      const { error: infoError } = await supabase
         .from("personal_info")
         .update({
           name: info.name,
@@ -63,14 +102,49 @@ const AdminPersonalInfo = () => {
         })
         .eq("id", info.id);
 
-      if (error) throw error;
-      toast({ title: "Saved", description: "Personal information updated" });
-      fetchInfo();
+      if (infoError) throw infoError;
+
+      // 2. Save Bubbles
+      const bubblePromises = Object.entries(bubbles).map(async ([key, state]) => {
+        if (state.id) {
+          return supabase
+            .from('static_content')
+            .update({ 
+              en_text: state.text, 
+              de_text: String(state.show),
+              section: 'hero'
+            })
+            .eq('id', state.id);
+        } else {
+          return supabase
+            .from('static_content')
+            .insert([{ 
+              content_key: key, 
+              en_text: state.text, 
+              de_text: String(state.show), 
+              section: 'hero' 
+            }]);
+        }
+      });
+
+      const results = await Promise.all(bubblePromises);
+      const firstError = results.find(r => r.error)?.error;
+      if (firstError) throw firstError;
+
+      toast({ title: "Saved", description: "All information and bubbles updated successfully" });
+      fetchData();
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const updateBubble = (key: string, updates: Partial<BubbleState>) => {
+    setBubbles(prev => ({
+      ...prev,
+      [key]: { ...prev[key], ...updates }
+    }));
   };
 
   return (
@@ -187,42 +261,40 @@ const AdminPersonalInfo = () => {
                 </div>
                 Hero Profile Bubbles (Skills)
               </h3>
-              <p className="text-sm text-muted-foreground">Change labels around your image. <span className="text-primary font-medium">Changes are saved automatically</span> when you finish typing or toggle visibility.</p>
+              <p className="text-sm text-muted-foreground">Change labels around your image. <span className="text-primary font-medium">Click "Save Changes" below</span> to apply all updates at once.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Bubble 1 (Top Left)</label>
-                  <HeroSkillInput 
-                    keyName="engineer_label" 
-                    defaultValue="AI Engineer"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Bubble 2 (Bottom)</label>
-                  <HeroSkillInput 
-                    keyName="machine_learning_label" 
-                    defaultValue="Machine Learning"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Bubble 3 (Top Right)</label>
-                  <HeroSkillInput 
-                    keyName="developer_label" 
-                    defaultValue="Full Stack Developer"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Bubble 4 (Far Right)</label>
-                  <HeroSkillInput 
-                    keyName="architect_label" 
-                    defaultValue="Software Architect"
-                  />
-                </div>
+                {Object.entries(bubbles).map(([key, state]) => (
+                  <div key={key} className="space-y-2">
+                    <label className="text-sm font-medium capitalize">{key.replace('_', ' ')}</label>
+                    <div className="flex items-center gap-2">
+                      <Input 
+                        value={state.text} 
+                        onChange={e => updateBubble(key, { text: e.target.value })}
+                        placeholder="Skill label..."
+                      />
+                      <Button
+                        type="button"
+                        variant={state.show ? "default" : "outline"}
+                        size="icon"
+                        className="h-10 w-10 shrink-0"
+                        onClick={() => updateBubble(key, { show: !state.show })}
+                        title={state.show ? "Visible" : "Hidden"}
+                      >
+                        {state.show ? (
+                          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        ) : (
+                          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="flex justify-end pt-4">
-              <Button type="submit" size="lg" className="gap-2" disabled={isSaving}>
+            <div className="flex justify-end pt-4 pb-12">
+              <Button type="submit" size="lg" className="gap-2 min-w-[150px]" disabled={isSaving}>
                 {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 Save Changes
               </Button>
@@ -230,124 +302,6 @@ const AdminPersonalInfo = () => {
           </form>
         )}
       </div>
-    </div>
-  );
-};
-
-// Simple Globe icon since I forgot to import it
-const Globe = ({ className }: { className?: string }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"></circle>
-    <line x1="2" y1="12" x2="22" y2="12"></line>
-    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-  </svg>
-);
-
-// Individual Input for Hero Skills that saves to static_content table
-const HeroSkillInput = ({ keyName, defaultValue }: { keyName: string, defaultValue: string }) => {
-  const [text, setText] = useState("");
-  const [show, setShow] = useState(true);
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  useEffect(() => {
-    // Initial fetch for the key
-    const fetchValue = async () => {
-      const { data } = await supabase
-        .from('static_content')
-        .select('en_text, de_text') // de_text will store visibility
-        .eq('content_key', keyName)
-        .maybeSingle();
-      
-      if (data) {
-        setText(data.en_text);
-        setShow(data.de_text !== 'false'); // default to true
-      } else {
-        setText(defaultValue);
-        setShow(true);
-      }
-    };
-    fetchValue();
-  }, [keyName, defaultValue]);
-
-  const handleBlur = async () => {
-    if (!text) return;
-    saveData(text, show);
-  };
-
-  const toggleVisibility = () => {
-    const nextShow = !show;
-    setShow(nextShow);
-    saveData(text, nextShow);
-  };
-
-  const saveData = async (newText: string, newShow: boolean) => {
-    setIsUpdating(true);
-    try {
-      const { data: existing } = await supabase
-        .from('static_content')
-        .select('id')
-        .eq('content_key', keyName)
-        .maybeSingle();
-
-      if (existing) {
-        await supabase
-          .from('static_content')
-          .update({ 
-            en_text: newText, 
-            de_text: String(newShow),
-            section: 'hero' // Force section to hero to ensure it's found by the frontend
-          })
-          .eq('id', existing.id);
-      } else {
-        await supabase
-          .from('static_content')
-          .insert([{ 
-            content_key: keyName, 
-            en_text: newText, 
-            de_text: String(newShow), 
-            section: 'hero' 
-          }]);
-      }
-      toast({ title: "Updated", description: `"${newText}" bubble updated successfully.` });
-    } catch (err) {
-      console.error("Save error:", err);
-      toast({ title: "Error", description: "Could not save changes.", variant: "destructive" });
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  return (
-    <div className="flex items-center gap-2">
-      <div className="relative flex-grow">
-        <Input 
-          value={text} 
-          onChange={e => setText(e.target.value)} 
-          onBlur={handleBlur}
-          className={isUpdating ? "opacity-50" : ""}
-        />
-        {isUpdating && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <Loader2 className="h-3 w-3 animate-spin text-primary" />
-          </div>
-        )}
-      </div>
-      <Button
-        type="button"
-        variant={show ? "default" : "outline"}
-        size="icon"
-        className="h-10 w-10 shrink-0"
-        onClick={toggleVisibility}
-        title={show ? "Visible" : "Hidden"}
-      >
-        <div className="flex flex-col items-center">
-          {show ? (
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          ) : (
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          )}
-        </div>
-      </Button>
     </div>
   );
 };
