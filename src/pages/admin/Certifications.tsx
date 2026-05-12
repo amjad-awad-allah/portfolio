@@ -19,7 +19,6 @@ import {
   DialogTrigger,
   DialogFooter
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { 
   Plus, 
   Pencil, 
@@ -27,7 +26,6 @@ import {
   Loader2,
   ArrowLeft,
   Award,
-  ExternalLink,
   CheckCircle2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";

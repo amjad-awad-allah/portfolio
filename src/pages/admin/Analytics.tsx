@@ -32,6 +32,14 @@ const AdminAnalytics = () => {
 
   useEffect(() => {
     fetchVisits();
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "exclude_analytics") {
+        setIsExcluded(e.newValue === "true");
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const markVisitsAsSeen = async (unseenIds: number[]) => {
@@ -77,6 +85,7 @@ const AdminAnalytics = () => {
 
   const toggleExclusion = () => {
     const newValue = !isExcluded;
+    console.log("Toggling exclusion to:", newValue);
     localStorage.setItem("exclude_analytics", newValue.toString());
     setIsExcluded(newValue);
     toast({ 

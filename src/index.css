@@ -435,4 +435,16 @@
   .translate-z-20 {
     transform: translateZ(20px);
   }
+
+  .bubble-dot {
+    background-color: var(--bubble-color);
+  }
+
+  .skill-bubble-container {
+    transform: rotate(var(--bubble-rotate)) translateX(var(--bubble-translate-x));
+    top: var(--bubble-top);
+    left: var(--bubble-left);
+    right: var(--bubble-right);
+    bottom: var(--bubble-bottom);
+  }
 }

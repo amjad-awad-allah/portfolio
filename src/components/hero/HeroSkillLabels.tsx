@@ -15,19 +15,19 @@ export const SkillLabel = ({ color, text, rotate, delay }: SkillLabelProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5 }}
-      className="absolute bg-white/90 dark:bg-secondary/90 py-1.5 px-3 text-xs font-medium flex items-center shadow-lg rounded-md border border-primary/30 md:block hidden"
       style={{
-        transform: `rotate(${rotate}deg) translateX(${rotate === 0 ? '-50%' : '0'})`,
-        ...(rotate === -45 && { top: '5%', left: '-15%' }),
-        ...(rotate === 0 && { bottom: '-8%', left: '50%' }),
-        ...(rotate === 45 && { top: '5%', right: '-15%' }),
-        ...(rotate === 90 && { top: '50%', right: '-20%' }),
-        '--bubble-color': color
+        '--bubble-rotate': `${rotate}deg`,
+        '--bubble-color': color,
+        '--bubble-top': (rotate === -45 || rotate === 45) ? '5%' : (rotate === 90 ? '50%' : 'auto'),
+        '--bubble-left': rotate === -45 ? '-15%' : (rotate === 0 ? '50%' : 'auto'),
+        '--bubble-right': rotate === 45 ? '-15%' : (rotate === 90 ? '-20%' : 'auto'),
+        '--bubble-bottom': rotate === 0 ? '-8%' : 'auto',
+        '--bubble-translate-x': rotate === 0 ? '-50%' : '0'
       } as any}
+      className="absolute bg-white/90 dark:bg-secondary/90 py-1.5 px-3 text-xs font-medium flex items-center shadow-lg rounded-md border border-primary/30 md:block hidden skill-bubble-container"
     >
       <span 
-        className="h-2.5 w-2.5 rounded-full mr-2 animate-pulse-slow"
-        style={{ backgroundColor: 'var(--bubble-color)' }}
+        className="h-2.5 w-2.5 rounded-full mr-2 animate-pulse-slow bubble-dot"
       ></span>
       <span className="text-foreground">{text}</span>
     </motion.div>

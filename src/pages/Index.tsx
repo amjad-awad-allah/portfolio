@@ -12,14 +12,11 @@ import Contact from "@/components/Contact";
 import Downloads from "@/components/Downloads";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import { Preloader } from "@/components/ui/Preloader";
 import { supabase } from "@/lib/supabase";
 
 const Index = () => {
-  const isMobile = useIsMobile();
-
   useEffect(() => {
     // Basic SEO and Meta setup
     document.title = "Amjad Awad-Allah | Software Developer & AI Specialist";
@@ -37,7 +34,14 @@ const Index = () => {
   useEffect(() => {
     const trackVisit = async () => {
       try {
+        // Automatically exclude localhost
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+          console.log("Analytics: Skipping tracking for localhost");
+          return;
+        }
+
         const isExcluded = localStorage.getItem("exclude_analytics") === "true";
+        console.log("Analytics: Exclusion Status is", isExcluded);
         if (isExcluded) return;
 
         // Get approximate location and IP via free service

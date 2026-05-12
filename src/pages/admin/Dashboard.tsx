@@ -119,10 +119,13 @@ const AdminDashboard = () => {
 
         {/* Version Footer */}
         <div className="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4 opacity-50">
-          <p className="text-xs font-medium">Amjad Portfolio CMS &bull; All rights reserved</p>
+          <div className="flex flex-col items-center sm:items-start gap-1">
+            <p className="text-xs font-medium">Amjad Portfolio CMS &bull; All rights reserved</p>
+            <p className="text-[10px] font-mono">Last Build: {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+          </div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase tracking-widest font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">Stable</span>
-            <span className="text-xs font-mono">v1.3.3</span>
+            <span className="text-[10px] uppercase tracking-widest font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">Pro Edition</span>
+            <span className="text-xs font-mono">v1.4.0</span>
           </div>
         </div>
       </main>
