@@ -22,9 +22,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { SiteVisit } from "@/types/database";
 
 const AdminAnalytics = () => {
-  const [visits, setVisits] = useState<any[]>([]);
+  const [visits, setVisits] = useState<SiteVisit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isExcluded, setIsExcluded] = useState(localStorage.getItem("exclude_analytics") === "true");
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const AdminAnalytics = () => {
     fetchVisits();
   }, []);
 
-  const markVisitsAsSeen = async (unseenIds: any[]) => {
+  const markVisitsAsSeen = async (unseenIds: number[]) => {
     if (!unseenIds || unseenIds.length === 0) return;
     
     console.log("Marking visits as seen:", unseenIds);

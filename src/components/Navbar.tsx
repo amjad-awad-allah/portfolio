@@ -181,8 +181,7 @@ const Navbar = () => {
               animate={{ opacity: 1, height: "100vh" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-x-0 top-[61px] bottom-0 z-50 bg-white dark:bg-gray-900 md:hidden overflow-y-auto"
-              style={{ touchAction: "pan-y" }}
+              className="fixed inset-x-0 top-[61px] bottom-0 z-50 bg-white dark:bg-gray-900 md:hidden overflow-y-auto touch-pan-y"
             >
               <motion.div 
                 className="flex flex-col items-center py-4 h-full"

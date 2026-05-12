@@ -17,22 +17,21 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogTrigger,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { 
-  Plus, 
-  Pencil, 
-  Trash2, 
-  ExternalLink, 
-  Image as ImageIcon,
   Loader2,
-  ArrowLeft
+  Plus,
+  Pencil,
+  Trash2,
+  ArrowLeft,
+  ExternalLink,
+  ImageIcon
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { Project } from "@/types/database";
+import { Badge } from "@/components/ui/badge";
 
 const AdminProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -43,18 +42,6 @@ const AdminProjects = () => {
 
   useEffect(() => {
     fetchProjects();
-    
-    // Check if we should open the "Add" dialog automatically
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("add") === "true") {
-      setEditingProject({ 
-        project_name: "", 
-        description_en: "", 
-        description_de: "", 
-        technologies_used: [],
-        achievements: [] 
-      });
-    }
   }, []);
 
   const fetchProjects = async () => {
@@ -115,8 +102,12 @@ const AdminProjects = () => {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this project?")) return;
+    
+    const { error } = await supabase
+      .from("projects")
+      .delete()
+      .eq("id", id);
 
-    const { error } = await supabase.from("projects").delete().eq("id", id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
@@ -127,8 +118,8 @@ const AdminProjects = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
           <div>
             <Button variant="ghost" size="sm" onClick={() => navigate("/admin/dashboard")} className="mb-2 -ml-2">
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -137,37 +128,41 @@ const AdminProjects = () => {
             <h1 className="text-3xl font-bold">Manage Projects</h1>
             <p className="text-muted-foreground mt-1">Add, edit or remove projects from your portfolio.</p>
           </div>
+          <Button onClick={() => setEditingProject({ 
+            project_name: "", 
+            description_en: "", 
+            description_de: "", 
+            technologies_used: [],
+            achievements: [],
+            is_visible: true,
+            display_order: 0
+          })}>
+            <Plus className="mr-2 h-4 w-4" /> Add Project
+          </Button>
+        </div>
 
-          <Dialog open={!!editingProject} onOpenChange={(open) => !open && setEditingProject(null)}>
-            <DialogTrigger asChild>
-              <Button onClick={() => setEditingProject({ 
-                project_name: "", 
-                description_en: "", 
-                description_de: "", 
-                technologies_used: [],
-                achievements: [] 
-              })} className="gap-2">
-                <Plus className="h-4 w-4" />
-                New Project
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{editingProject?.id ? "Edit Project" : "Create New Project"}</DialogTitle>
-              </DialogHeader>
+        <Dialog open={!!editingProject} onOpenChange={(open) => !open && setEditingProject(null)}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingProject?.id ? "Edit Project" : "Add New Project"}</DialogTitle>
+            </DialogHeader>
+            
+            {editingProject && (
               <form onSubmit={handleSave} className="space-y-4 py-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Project Name</label>
+                    <label htmlFor="project_name" className="text-sm font-medium">Project Name</label>
                     <Input 
+                      id="project_name"
                       value={editingProject?.project_name || ""} 
                       onChange={e => setEditingProject({...editingProject!, project_name: e.target.value})}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Live URL</label>
+                    <label htmlFor="description_url" className="text-sm font-medium">Live URL</label>
                     <Input 
+                      id="description_url"
                       value={editingProject?.description_url || ""} 
                       onChange={e => setEditingProject({...editingProject!, description_url: e.target.value})}
                       placeholder="https://..."
@@ -176,8 +171,9 @@ const AdminProjects = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Description (English)</label>
+                  <label htmlFor="description_en" className="text-sm font-medium">Description (English)</label>
                   <textarea 
+                    id="description_en"
                     className="w-full min-h-[100px] p-2 rounded-md border border-input bg-transparent text-sm"
                     value={editingProject?.description_en || ""} 
                     onChange={e => setEditingProject({...editingProject!, description_en: e.target.value})}
@@ -186,8 +182,9 @@ const AdminProjects = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Description (German)</label>
+                  <label htmlFor="description_de" className="text-sm font-medium">Description (German)</label>
                   <textarea 
+                    id="description_de"
                     className="w-full min-h-[100px] p-2 rounded-md border border-input bg-transparent text-sm"
                     value={editingProject?.description_de || ""} 
                     onChange={e => setEditingProject({...editingProject!, description_de: e.target.value})}
@@ -196,11 +193,12 @@ const AdminProjects = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Technologies (comma separated)</label>
+                  <label htmlFor="image_url" className="text-sm font-medium">Image URL</label>
                   <Input 
-                    value={Array.isArray(editingProject?.technologies_used) ? editingProject?.technologies_used.join(", ") : ""} 
-                    onChange={e => setEditingProject({...editingProject!, technologies_used: e.target.value.split(",").map(t => t.trim())})}
-                    placeholder="React, TypeScript, Supabase"
+                    id="image_url"
+                    value={editingProject?.image_url || ""} 
+                    onChange={e => setEditingProject({...editingProject!, image_url: e.target.value})}
+                    placeholder="https://..."
                   />
                 </div>
 
@@ -216,8 +214,9 @@ const AdminProjects = () => {
                     </label>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium">Display Order (Lower first)</label>
+                    <label htmlFor="display_order" className="text-xs font-medium">Display Order (Lower first)</label>
                     <Input 
+                      id="display_order"
                       type="number"
                       value={editingProject?.display_order || 0} 
                       onChange={e => setEditingProject({...editingProject!, display_order: parseInt(e.target.value) || 0})}
@@ -227,22 +226,22 @@ const AdminProjects = () => {
                 </div>
 
                 <DialogFooter className="pt-4">
-                  <Button type="button" variant="ghost" onClick={() => setEditingProject(null)}>Cancel</Button>
+                  <Button type="button" variant="outline" onClick={() => setEditingProject(null)}>Cancel</Button>
                   <Button type="submit" disabled={isSaving}>
-                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                     Save Project
                   </Button>
                 </DialogFooter>
               </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         <div className="glass-card rounded-xl overflow-hidden border border-primary/5">
           {isLoading ? (
             <div className="p-12 flex flex-col items-center justify-center gap-4 text-muted-foreground">
               <Loader2 className="h-8 w-8 animate-spin" />
-              <p>Fetching your projects...</p>
+              <p>Loading projects...</p>
             </div>
           ) : (
             <Table>
@@ -258,29 +257,31 @@ const AdminProjects = () => {
               <TableBody>
                 {projects.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
-                      No projects found. Start by adding one!
+                    <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                      No projects found. Add your first project!
                     </TableCell>
                   </TableRow>
                 ) : (
                   projects.map((project) => (
-                    <TableRow key={project.id} className="group hover:bg-primary/5 transition-colors">
+                    <TableRow key={project.id}>
                       <TableCell>
-                        {project.image_url ? (
-                          <img src={project.image_url} alt="" className="w-12 h-12 object-cover rounded-lg shadow-sm" />
-                        ) : (
-                          <div className="w-12 h-12 bg-secondary rounded-lg flex items-center justify-center">
-                            <ImageIcon className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                        )}
+                        <div className="w-12 h-12 rounded bg-muted overflow-hidden flex items-center justify-center">
+                          {project.image_url ? (
+                            <img src={project.image_url} alt={project.project_name} className="w-full h-full object-cover" />
+                          ) : (
+                            <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                          )}
+                        </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="font-semibold">{project.project_name}</div>
-                        {project.description_url && (
-                          <a href={project.description_url} target="_blank" className="text-xs text-primary flex items-center gap-1 hover:underline">
-                            <ExternalLink size={10} /> Live Demo
-                          </a>
-                        )}
+                      <TableCell className="font-medium">
+                        <div className="flex flex-col">
+                          <span>{project.project_name}</span>
+                          {project.description_url && (
+                            <a href={project.description_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary flex items-center gap-1 mt-1 hover:underline">
+                              <ExternalLink className="h-3 w-3" /> View Live
+                            </a>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         <Badge variant="outline">{project.display_order || 0}</Badge>
@@ -294,21 +295,11 @@ const AdminProjects = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => setEditingProject(project)}
-                            className="h-8 w-8 hover:text-blue-500"
-                          >
+                          <Button variant="ghost" size="icon" onClick={() => setEditingProject(project)}>
                             <Pencil className="h-4 w-4" />
                           </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleDelete(project.id)}
-                            className="h-8 w-8 hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
+                          <Button variant="ghost" size="icon" onClick={() => handleDelete(project.id)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
                       </TableCell>
@@ -323,5 +314,10 @@ const AdminProjects = () => {
     </div>
   );
 };
+
+// Internal icon component for the button since it's not imported
+const Save = ({ className }: { className?: string }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+);
 
 export default AdminProjects;

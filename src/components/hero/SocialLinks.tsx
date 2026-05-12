@@ -47,7 +47,6 @@ export const SocialLinks = ({ linkedinUrl, githubUrl, xingUrl, indeedUrl }: Soci
           aria-label={link.label}
           whileHover={{ scale: 1.15, y: -4 }}
           whileTap={{ scale: 0.9 }}
-          style={{ pointerEvents: 'auto' }}
         >
           {link.icon}
         </motion.a>

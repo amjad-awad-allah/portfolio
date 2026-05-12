@@ -2,12 +2,12 @@
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { 
-  LayoutDashboard, 
-  FolderKanban, 
-  Briefcase, 
-  Award, 
-  User, 
+import {
+  LayoutDashboard,
+  FolderKanban,
+  Briefcase,
+  Award,
+  User,
   LogOut,
   Settings,
   Globe,
@@ -42,7 +42,7 @@ const AdminDashboard = () => {
             </div>
             <h1 className="font-bold text-lg hidden sm:block">Admin Dashboard</h1>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="gap-2">
               <Globe className="h-4 w-4" />
@@ -122,7 +122,7 @@ const AdminDashboard = () => {
           <p className="text-xs font-medium">Amjad Portfolio CMS &bull; All rights reserved</p>
           <div className="flex items-center gap-2">
             <span className="text-[10px] uppercase tracking-widest font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">Stable</span>
-            <span className="text-xs font-mono">v1.3.2</span>
+            <span className="text-xs font-mono">v1.3.3</span>
           </div>
         </div>
       </main>

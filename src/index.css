@@ -70,32 +70,29 @@
   }
 }
 
-/* Base styles remain the same */
 @layer base {
   * {
     @apply border-border;
   }
   html {
     @apply scroll-smooth;
+    touch-action: manipulation;
   }
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
-    background-color: #F3F6F9; /* Soft blue for light mode */
+    background-color: #F3F6F9;
   }
   
-  /* Code-inspired font for tech sections */
   .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
   
-  /* Dark mode body background */
   .dark body {
-    background-color: #1A2B36; /* Deep blue-black for dark mode */
+    background-color: #1A2B36;
   }
 }
 
-/* Keep existing components and styles but update a few for the tech theme */
 @layer components {
   .glass {
     @apply bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg;
@@ -109,7 +106,6 @@
     @apply max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-32;
   }
   
-  /* Gradient text for headings */
   .heading-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] animate-gradient;
   }
@@ -142,7 +138,6 @@
     @apply transition-all duration-500 hover:scale-[1.02] hover:shadow-xl;
   }
   
-  /* Tech inspired components */
   .tech-border {
     @apply border border-dashed border-primary/40 rounded-xl p-4;
   }
@@ -151,7 +146,6 @@
     @apply font-mono bg-secondary/70 dark:bg-secondary/30 p-4 rounded-xl text-sm overflow-x-auto shadow-lg border border-secondary/20 dark:border-secondary/10;
   }
   
-  /* Matrix-inspired grid pattern background */
   .bg-grid-pattern {
     background-image: 
       linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
@@ -165,7 +159,6 @@
       linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   }
   
-  /* Terminal-like components */
   .terminal {
     @apply font-mono bg-gray-900 text-green-400 p-4 rounded-xl overflow-x-auto shadow-2xl border border-gray-700;
   }
@@ -178,7 +171,6 @@
     @apply text-blue-400 mr-2;
   }
   
-  /* IDE-like components */
   .ide-window {
     @apply bg-gray-800 rounded-xl overflow-hidden border border-gray-700 shadow-2xl;
   }
@@ -195,7 +187,6 @@
     @apply text-gray-500 pr-4 text-right select-none;
   }
   
-  /* New AI and coding themed components */
   .ai-card {
     @apply relative bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-primary/10 overflow-hidden;
   }
@@ -219,7 +210,6 @@
     @apply mr-2 text-secondary;
   }
   
-  /* Neural network visualization */
   .neural-network-bg {
     @apply relative overflow-hidden;
   }
@@ -229,7 +219,6 @@
     @apply absolute inset-0 bg-grid-pattern opacity-5;
   }
   
-  /* Section heading with animated underline */
   .section-heading {
     @apply relative inline-block;
   }
@@ -244,7 +233,6 @@
   }
 }
 
-/* Timeline styles */
 .timeline-container {
   @apply relative;
 }
@@ -262,24 +250,16 @@
   @apply absolute z-10 left-4 sm:left-7 md:left-1/2 w-3 sm:w-3.5 h-3 sm:h-3.5 rounded-full bg-primary transform -translate-x-1/2;
 }
 
-/* Profile image animation */
 .profile-image {
   animation: float 6s ease-in-out infinite;
 }
 
 @keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }
 
-/* Appear animations */
 .appear-1 {
   opacity: 0;
   animation: appear 0.6s ease forwards;
@@ -299,31 +279,19 @@
 }
 
 @keyframes appear {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Gradient animation for text */
 @keyframes gradient {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .animate-gradient {
   animation: gradient 3s ease infinite;
 }
 
-/* Typing cursor animation */
 @keyframes cursor-blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
@@ -334,16 +302,13 @@
   @apply text-primary animate-pulse ml-1;
 }
 
-/* Tech-inspired typing animation */
 .typing-effect {
   overflow: hidden;
   border-right: 2px solid;
   white-space: nowrap;
   margin: 0 auto;
   letter-spacing: 0.15em;
-  animation: 
-    typing 3.5s steps(30, end),
-    blink-caret 0.75s step-end infinite;
+  animation: typing 3.5s steps(30, end), blink-caret 0.75s step-end infinite;
 }
 
 @keyframes typing {
@@ -356,7 +321,6 @@
   50% { border-color: currentColor }
 }
 
-/* Futuristic glow effects */
 .glow-effect {
   position: relative;
 }
@@ -379,7 +343,6 @@
   opacity: 1;
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -397,169 +360,25 @@
   @apply bg-gray-400 dark:bg-gray-500;
 }
 
-/* Code syntax highlighting */
-.syntax-highlight .keyword {
-  @apply text-purple-500;
-}
-
-.syntax-highlight .function {
-  @apply text-blue-500;
-}
-
-.syntax-highlight .string {
-  @apply text-green-500;
-}
-
-.syntax-highlight .number {
-  @apply text-orange-500;
-}
-
-.syntax-highlight .comment {
-  @apply text-gray-500 italic;
-}
-
-/* Tech-inspired card with code-like border */
-.tech-card {
-  @apply relative p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden;
-  border: 1px dashed rgba(0, 0, 0, 0.2);
-}
-
-.dark .tech-card {
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-}
-
-.tech-card::before {
-  content: "";
-  @apply absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500;
-}
-
-/* Code line animation */
-.code-line-animation::after {
-  content: '';
-  position: absolute;
-  height: 1px;
-  width: 100%;
-  bottom: 0;
-  left: 0;
-  background: linear-gradient(to right, transparent, currentColor, transparent);
-  animation: scan-line 2s linear infinite;
-}
-
-@keyframes scan-line {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-/* Circuit board pattern */
-.circuit-pattern {
-  background-image: 
-    radial-gradient(circle at 25px 25px, rgba(0, 0, 0, 0.1) 2px, transparent 0),
-    linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-  background-size: 50px 50px, 25px 25px, 25px 25px;
-}
-
-.dark .circuit-pattern {
-  background-image: 
-    radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.1) 2px, transparent 0),
-    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-}
-
-/* Highlight animation for CV section */
-@keyframes highlight-pulse {
-  0% {
-    box-shadow: 0 0 5px rgba(0, 95, 115, 0.3);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 0 15px rgba(0, 95, 115, 0.5);
-    transform: scale(1.02);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(0, 95, 115, 0.3);
-    transform: scale(1);
-  }
-}
-
-.highlight-section {
-  animation: highlight-pulse 2s ease-in-out;
-}
-
-/* Mobile-specific styles */
-@media (max-width: 768px) {
-  .section-container {
-    @apply py-12;
-  }
-  
-  .glass-card {
-    @apply p-4;
-  }
-  
-  /* Adjust contact cards for mobile */
-  .contact-card {
-    @apply p-3;
-  }
-  
-  /* Improve spacing on mobile */
-  .mobile-py-2 {
-    @apply py-2;
-  }
-  
-  .mobile-px-3 {
-    @apply px-3;
-  }
-  
-  /* Better mobile touch targets */
-  .mobile-touch-target {
-    @apply min-h-10 min-w-10;
-  }
-}
-
-/* Removed contact animations */
-
-/* Enhanced code syntax highlighting with more visible colors */
-.syntax-highlight .keyword {
-  @apply text-sky-600 dark:text-sky-400; /* Changed for better visibility */
-}
-
-.syntax-highlight .function {
-  @apply text-blue-600 dark:text-blue-400; /* Changed for better visibility */
-}
-
-.syntax-highlight .string {
-  @apply text-emerald-600 dark:text-emerald-400; /* Changed for better visibility */
-}
-
-.syntax-highlight .number {
-  @apply text-amber-600 dark:text-amber-400; /* Changed for better visibility */
-}
-
-.syntax-highlight .comment {
-  @apply text-gray-500 dark:text-gray-400 italic;
-}
-
-/* New typing animation for the AI theme */
-@keyframes ai-typing {
-  from { width: 0 }
-  to { width: 100% }
-}
+.syntax-highlight .keyword { @apply text-sky-600 dark:text-sky-400; }
+.syntax-highlight .function { @apply text-blue-600 dark:text-blue-400; }
+.syntax-highlight .string { @apply text-emerald-600 dark:text-emerald-400; }
+.syntax-highlight .number { @apply text-amber-600 dark:text-amber-400; }
+.syntax-highlight .comment { @apply text-gray-500 dark:text-gray-400 italic; }
 
 .ai-typing-effect {
   overflow: hidden;
   border-right: 2px solid currentColor;
   white-space: nowrap;
   margin: 0 auto;
-  animation: 
-    ai-typing 3.5s steps(40, end),
-    blink-caret 0.75s step-end infinite;
+  animation: ai-typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
 }
 
-/* Enhanced neural network visualization */
+@keyframes ai-typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
 .neural-connection {
   @apply absolute bg-primary/20 dark:bg-primary/10 h-px;
   animation: neural-pulse 3s infinite;
@@ -570,7 +389,6 @@
   50% { opacity: 0.8; height: 2px; }
 }
 
-/* AI node visual effect */
 .ai-node {
   @apply absolute w-3 h-3 rounded-full bg-primary/30 dark:bg-primary/20;
   animation: ai-node-pulse 4s infinite;
@@ -581,7 +399,6 @@
   50% { transform: scale(1.5); opacity: 0.7; }
 }
 
-/* Digital circuit animation */
 .circuit-path {
   @apply absolute bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0 h-0.5;
   animation: circuit-flow 5s linear infinite;
@@ -592,7 +409,6 @@
   100% { transform: translateX(100%); }
 }
 
-/* Animation for slow pulse */
 @keyframes pulse-slow {
   0%, 100% { opacity: 0.3; transform: scale(1); }
   50% { opacity: 0.7; transform: scale(1.05); }
@@ -600,4 +416,23 @@
 
 .animate-pulse-slow {
   animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 3D Utilities */
+@layer utilities {
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .translate-z-50 {
+    transform: translateZ(50px);
+  }
+  
+  .translate-z-30 {
+    transform: translateZ(30px);
+  }
+
+  .translate-z-20 {
+    transform: translateZ(20px);
+  }
 }

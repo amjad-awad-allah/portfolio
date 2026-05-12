@@ -32,12 +32,7 @@ const Index = () => {
       document.head.appendChild(metaDescription);
     }
     metaDescription.setAttribute('content', 'Professional portfolio of Amjad Awad-Allah, specializing in software development, AI, and mobile app development.');
-
-    // Mobile optimizations
-    if (isMobile) {
-      document.documentElement.style.setProperty('touch-action', 'manipulation');
-    }
-  }, [isMobile]);
+  }, []);
 
   useEffect(() => {
     const trackVisit = async () => {

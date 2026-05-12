@@ -22,11 +22,12 @@ export const SkillLabel = ({ color, text, rotate, delay }: SkillLabelProps) => {
         ...(rotate === 0 && { bottom: '-8%', left: '50%' }),
         ...(rotate === 45 && { top: '5%', right: '-15%' }),
         ...(rotate === 90 && { top: '50%', right: '-20%' }),
-      }}
+        '--bubble-color': color
+      } as any}
     >
       <span 
         className="h-2.5 w-2.5 rounded-full mr-2 animate-pulse-slow"
-        style={{ backgroundColor: color }}
+        style={{ backgroundColor: 'var(--bubble-color)' }}
       ></span>
       <span className="text-foreground">{text}</span>
     </motion.div>

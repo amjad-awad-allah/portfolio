@@ -68,8 +68,7 @@ const ProjectCard = ({
     className={`glass-card group overflow-hidden rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full ${project.description_url ? 'cursor-pointer' : ''}`}
   >
       <div 
-        style={{ transform: "translateZ(50px)" }}
-        className="w-full aspect-video overflow-hidden bg-secondary/30 relative flex-shrink-0"
+        className="w-full aspect-video overflow-hidden bg-secondary/30 relative flex-shrink-0 translate-z-50"
       >
         {project.image_url ? (
           <img 
@@ -95,7 +94,7 @@ const ProjectCard = ({
         )}
       </div>
       
-      <div className="p-6 flex-grow" style={{ transform: "translateZ(30px)" }}>
+      <div className="p-6 flex-grow translate-z-30">
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-lg font-semibold group-hover:text-primary transition-colors duration-300">{project.project_name}</h3>
           <Badge variant="outline" className="bg-primary/5">{companyName}</Badge>
@@ -118,7 +117,7 @@ const ProjectCard = ({
       </div>
       
       {project.description_url && (
-        <div className="px-6 pb-6 mt-auto border-t border-border/10 pt-4" style={{ transform: "translateZ(20px)" }}>
+        <div className="px-6 pb-6 mt-auto border-t border-border/10 pt-4 translate-z-20">
           <div className="flex items-center gap-1.5 text-primary text-sm font-semibold transition-all duration-300">
             <ExternalLink size={16} className="group-hover:rotate-12 transition-transform duration-300" />
             <span className="group-hover:underline">{t("projects.viewDetails")}</span>

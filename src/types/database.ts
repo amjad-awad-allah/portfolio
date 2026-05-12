@@ -42,7 +42,9 @@ export interface Project {
   technologies_used: string[]; // JSONB array
   achievements: string[]; // JSONB array
   image_url: string;
-  description_url: string | null; // Added this field
+  description_url: string | null;
+  is_visible?: boolean;
+  display_order?: number;
 }
 
 export interface TechnicalSkill {
@@ -74,4 +76,17 @@ export interface Certification {
   badge_image_url: string | null;
   certificate_url: string | null;
   credly_url: string | null;
+}
+
+export interface SiteVisit {
+  id: number;
+  visited_at: string;
+  user_agent: string | null;
+  ip_address: string | null;
+  country: string | null;
+  city: string | null;
+  device_type: string | null;
+  screen_resolution: string | null;
+  language: string | null;
+  is_seen: boolean | null;
 }

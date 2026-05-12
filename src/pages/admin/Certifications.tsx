@@ -78,8 +78,9 @@ const AdminCertifications = () => {
     setIsSaving(true);
 
     try {
+      console.log("Saving certificate:", editingCert);
       if (editingCert.id) {
-        const { error } = await supabase
+        const response = await supabase
           .from("certifications")
           .update({
             certification_name_en: editingCert.certification_name_en,
@@ -92,19 +93,32 @@ const AdminCertifications = () => {
             is_featured: editingCert.is_featured,
           })
           .eq("id", editingCert.id);
-        if (error) throw error;
+        
+        console.log("Supabase Update Response:", response);
+        if (response.error) {
+          console.error("Supabase update error:", response.error);
+          throw response.error;
+        }
         toast({ title: "Updated", description: "Certificate updated successfully" });
       } else {
         const { error } = await supabase
           .from("certifications")
           .insert([editingCert]);
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase insert error:", error);
+          throw error;
+        }
         toast({ title: "Created", description: "Certificate added successfully" });
       }
       setEditingCert(null);
       fetchCerts();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      console.error("Detailed handleSave error:", error);
+      toast({ 
+        title: "Error", 
+        description: error.message || "Failed to save. This might be a permission issue.", 
+        variant: "destructive" 
+      });
     } finally {
       setIsSaving(false);
     }
