@@ -85,12 +85,16 @@ const AdminAnalytics = () => {
 
   const toggleExclusion = () => {
     const newValue = !isExcluded;
-    console.log("Toggling exclusion to:", newValue);
+    console.log("Analytics: Toggling exclusion to", newValue);
     localStorage.setItem("exclude_analytics", newValue.toString());
     setIsExcluded(newValue);
+    
+    // Notify same-window listeners
+    window.dispatchEvent(new Event('storage'));
+    
     toast({ 
       title: newValue ? "Device Excluded" : "Device Included", 
-      description: newValue ? "Your visits will no longer be tracked." : "Your visits will now be tracked." 
+      description: newValue ? "Future visits from this browser will not be tracked." : "Your visits will now be tracked normally." 
     });
   };
 

@@ -105,10 +105,13 @@ const AdminCertifications = () => {
             credly_url: editingCert.credly_url,
             is_featured: editingCert.is_featured,
           })
-          .eq("id", targetId);
+          .eq("id", targetId)
+          .select()
+          .single();
         
         console.log("Supabase Update Response:", response);
         if (response.error) throw response.error;
+        console.log("Updated data from DB:", response.data);
         toast({ title: "Updated", description: "Certificate updated successfully" });
       } else {
         const { error } = await supabase
