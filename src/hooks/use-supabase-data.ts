@@ -173,7 +173,7 @@ export function useEducation() {
       }
     }
 
-    fetchData();
+    fetchEducation();
   }, []);
 
   return { data, isLoading, error };

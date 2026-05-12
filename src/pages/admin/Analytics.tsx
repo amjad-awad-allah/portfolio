@@ -263,6 +263,19 @@ const AdminAnalytics = () => {
               <span>{typeof localStorage !== 'undefined' ? "Yes" : "No"}</span>
             </div>
           </div>
+          <div className="mt-4 flex justify-end">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-[10px] h-7"
+              onClick={() => {
+                localStorage.removeItem("exclude_analytics");
+                window.location.reload();
+              }}
+            >
+              Reset Exclusion Settings
+            </Button>
+          </div>
         </div>
       </div>
     </div>
