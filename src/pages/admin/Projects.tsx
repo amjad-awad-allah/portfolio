@@ -11,6 +11,7 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Dialog, 
   DialogContent, 
@@ -61,6 +62,7 @@ const AdminProjects = () => {
     const { data, error } = await supabase
       .from("projects")
       .select("*")
+      .order("display_order", { ascending: true })
       .order("id", { ascending: false });
 
     if (error) {
@@ -88,6 +90,8 @@ const AdminProjects = () => {
             description_url: editingProject.description_url,
             image_url: editingProject.image_url,
             technologies_used: editingProject.technologies_used,
+            is_visible: editingProject.is_visible ?? true,
+            display_order: Number(editingProject.display_order) || 0,
           })
           .eq("id", editingProject.id);
         if (error) throw error;
@@ -200,13 +204,26 @@ const AdminProjects = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Image URL</label>
-                  <Input 
-                    value={editingProject?.image_url || ""} 
-                    onChange={e => setEditingProject({...editingProject!, image_url: e.target.value})}
-                    placeholder="https://..."
-                  />
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="is_visible" 
+                      checked={editingProject?.is_visible !== false} 
+                      onCheckedChange={(checked) => setEditingProject({...editingProject!, is_visible: checked as boolean})}
+                    />
+                    <label htmlFor="is_visible" className="text-sm font-medium leading-none cursor-pointer">
+                      Visible in Portfolio
+                    </label>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-medium">Display Order (Lower first)</label>
+                    <Input 
+                      type="number"
+                      value={editingProject?.display_order || 0} 
+                      onChange={e => setEditingProject({...editingProject!, display_order: parseInt(e.target.value) || 0})}
+                      className="h-8"
+                    />
+                  </div>
                 </div>
 
                 <DialogFooter className="pt-4">
@@ -233,7 +250,8 @@ const AdminProjects = () => {
                 <TableRow>
                   <TableHead className="w-[100px]">Image</TableHead>
                   <TableHead>Project Name</TableHead>
-                  <TableHead className="hidden md:table-cell">Technologies</TableHead>
+                  <TableHead className="hidden md:table-cell">Order</TableHead>
+                  <TableHead className="hidden md:table-cell">Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -265,16 +283,14 @@ const AdminProjects = () => {
                         )}
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <div className="flex flex-wrap gap-1">
-                          {Array.isArray(project.technologies_used) && project.technologies_used.slice(0, 3).map((tech, i) => (
-                            <Badge key={i} variant="secondary" className="text-[10px] px-1.5 py-0">
-                              {tech}
-                            </Badge>
-                          ))}
-                          {Array.isArray(project.technologies_used) && project.technologies_used.length > 3 && (
-                            <span className="text-[10px] text-muted-foreground">+{project.technologies_used.length - 3}</span>
-                          )}
-                        </div>
+                        <Badge variant="outline">{project.display_order || 0}</Badge>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {project.is_visible !== false ? (
+                          <Badge className="bg-green-500/10 text-green-500 border-green-500/20">Visible</Badge>
+                        ) : (
+                          <Badge variant="secondary" className="opacity-50">Hidden</Badge>
+                        )}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">

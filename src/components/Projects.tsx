@@ -44,14 +44,37 @@ const Projects = () => {
 
   const filteredProjects = useMemo(() => {
     if (!allProjects) return [];
-    return allProjects.filter(project => {
+    
+    // First, filter by visibility and current filters
+    const filtered = allProjects.filter(project => {
+      // Respect visibility (allow undefined/null to be visible by default)
+      if (project.is_visible === false) {
+        return false;
+      }
+      
       if (companyFilter !== "all" && project.experience_id.toString() !== companyFilter) {
         return false;
       }
+      
       if (techFilter !== "all" && !project.technologies_used?.includes(techFilter)) {
         return false;
       }
+      
       return true;
+    });
+
+    // Then, sort by display_order
+    return filtered.sort((a, b) => {
+      // Sort by display_order (lower first)
+      const orderA = a.display_order ?? 0;
+      const orderB = b.display_order ?? 0;
+      
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      
+      // Fallback to id (newer first) if order is same
+      return (b.id || 0) - (a.id || 0);
     });
   }, [allProjects, companyFilter, techFilter]);
 

@@ -32,6 +32,17 @@ const AdminAnalytics = () => {
     fetchVisits();
   }, []);
 
+  const markVisitsAsSeen = async (unseenIds: string[]) => {
+    if (unseenIds.length === 0) return;
+    
+    const { error } = await supabase
+      .from("site_visits")
+      .update({ is_seen: true })
+      .in("id", unseenIds);
+      
+    if (error) console.error("Error marking visits as seen:", error);
+  };
+
   const fetchVisits = async () => {
     setIsLoading(true);
     const { data, error } = await supabase
@@ -44,6 +55,12 @@ const AdminAnalytics = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       setVisits(data || []);
+      
+      // Mark unseen visits as seen
+      const unseenIds = data?.filter(v => !v.is_seen).map(v => v.id) || [];
+      if (unseenIds.length > 0) {
+        markVisitsAsSeen(unseenIds);
+      }
     }
     setIsLoading(false);
   };
@@ -60,13 +77,25 @@ const AdminAnalytics = () => {
 
   const clearVisits = async () => {
     if (!confirm("Are you sure you want to clear all visit history?")) return;
-    const { error } = await supabase.from("site_visits").delete().not("id", "is", null);
+    
+    setIsLoading(true);
+    const { error } = await supabase
+      .from("site_visits")
+      .delete()
+      .lte("visited_at", new Date().toISOString());
+      
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      console.error("Delete error:", error);
+      toast({ 
+        title: "Error", 
+        description: error.message || "Could not clear history. This might be a permission issue.", 
+        variant: "destructive" 
+      });
     } else {
       toast({ title: "Success", description: "History cleared" });
       setVisits([]);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -154,9 +183,17 @@ const AdminAnalytics = () => {
                   </TableRow>
                 ) : (
                   visits.map((visit) => (
-                    <TableRow key={visit.id} className="hover:bg-primary/5 transition-colors">
+                    <TableRow 
+                      key={visit.id} 
+                      className={`transition-colors ${!visit.is_seen ? "bg-primary/10 hover:bg-primary/15 font-medium" : "hover:bg-primary/5"}`}
+                    >
                       <TableCell className="font-mono text-xs">
-                        {format(new Date(visit.visited_at), "PPP p")}
+                        <div className="flex items-center gap-2">
+                          {!visit.is_seen && (
+                            <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+                          )}
+                          {format(new Date(visit.visited_at), "PPP p")}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <code className="text-xs bg-secondary px-1.5 py-0.5 rounded">{visit.page_path}</code>
