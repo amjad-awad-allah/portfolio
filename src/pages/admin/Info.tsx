@@ -24,6 +24,14 @@ type BubbleState = {
   id?: number;
 };
 
+type HobbyState = {
+  id?: number;
+  content_key: string;
+  en_text: string;
+  de_text: string;
+  isDeleted?: boolean;
+};
+
 const AdminPersonalInfo = () => {
   const [info, setInfo] = useState<Partial<PersonalInfo> | null>(null);
   const [bubbles, setBubbles] = useState<Record<string, BubbleState>>({
@@ -32,6 +40,7 @@ const AdminPersonalInfo = () => {
     developer_label: { text: "Full Stack Developer", show: true },
     architect_label: { text: "Software Architect", show: true },
   });
+  const [hobbies, setHobbies] = useState<HobbyState[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
@@ -52,13 +61,30 @@ const AdminPersonalInfo = () => {
       if (infoError) throw infoError;
       setInfo(infoData);
 
-      // Fetch Bubbles (static_content)
+      // Fetch Bubbles (static_content hero)
       const { data: staticData, error: staticError } = await supabase
         .from("static_content")
         .select("*")
         .eq("section", "hero");
 
       if (staticError) throw staticError;
+
+      // Fetch Hobbies (static_content hobbies)
+      const { data: hobbiesData, error: hobbiesError } = await supabase
+        .from("static_content")
+        .select("*")
+        .eq("section", "hobbies");
+
+      if (hobbiesError) throw hobbiesError;
+      
+      if (hobbiesData) {
+        setHobbies(hobbiesData.map(h => ({
+          id: h.id,
+          content_key: h.content_key,
+          en_text: h.en_text,
+          de_text: h.de_text
+        })));
+      }
 
       if (staticData) {
         const newBubbles = { ...bubbles };
@@ -117,6 +143,7 @@ const AdminPersonalInfo = () => {
           profile_image_url: info.profile_image_url,
           cv_en: info.cv_en,
           cv_de: info.cv_de,
+          languages: info.languages,
         })
         .eq("id", info.id);
 
@@ -148,6 +175,32 @@ const AdminPersonalInfo = () => {
       const results = await Promise.all(bubblePromises);
       const firstError = results.find(r => r.error)?.error;
       if (firstError) throw firstError;
+
+      // 3. Save Hobbies
+      const hobbyPromises = hobbies.map(async (hobby) => {
+        if (hobby.isDeleted && hobby.id) {
+          return supabase.from('static_content').delete().eq('id', hobby.id);
+        } else if (!hobby.isDeleted) {
+          if (hobby.id) {
+            return supabase.from('static_content').update({
+              en_text: hobby.en_text,
+              de_text: hobby.de_text
+            }).eq('id', hobby.id);
+          } else {
+            return supabase.from('static_content').insert([{
+              section: 'hobbies',
+              content_key: `hobby_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+              en_text: hobby.en_text,
+              de_text: hobby.de_text
+            }]);
+          }
+        }
+        return { error: null }; // for newly created then deleted items
+      });
+
+      const hobbyResults = await Promise.all(hobbyPromises);
+      const firstHobbyError = hobbyResults.find(r => r.error)?.error;
+      if (firstHobbyError) throw firstHobbyError;
 
       toast({ title: "Saved", description: "All information and bubbles updated successfully" });
       fetchData();
@@ -225,6 +278,79 @@ const AdminPersonalInfo = () => {
                     value={info?.email || ""} 
                     onChange={e => setInfo({...info!, email: e.target.value})}
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* Languages Section */}
+            <div className="glass-card p-6 rounded-2xl border border-primary/5 space-y-6">
+              <h3 className="font-bold text-lg flex items-center gap-2">
+                <Globe className="h-5 w-5 text-primary" />
+                Language Skills
+              </h3>
+              <p className="text-sm text-muted-foreground">Add your languages and proficiency levels (e.g., Arabic: Native, German: B2).</p>
+              
+              <div className="space-y-4">
+                {Object.entries(info?.languages || {}).map(([lang, level]) => (
+                  <div key={lang} className="flex items-center gap-4">
+                    <Input 
+                      value={lang}
+                      disabled
+                      className="max-w-[200px]"
+                    />
+                    <Input 
+                      value={level}
+                      onChange={(e) => {
+                        const newLangs = { ...info?.languages, [lang]: e.target.value };
+                        setInfo({ ...info!, languages: newLangs });
+                      }}
+                      placeholder="Proficiency level..."
+                      className="max-w-[200px]"
+                    />
+                    <Button 
+                      variant="destructive" 
+                      size="icon"
+                      type="button"
+                      onClick={() => {
+                        const newLangs = { ...info?.languages };
+                        delete newLangs[lang];
+                        setInfo({ ...info!, languages: newLangs });
+                      }}
+                    >
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/></svg>
+                    </Button>
+                  </div>
+                ))}
+                
+                <div className="flex items-center gap-4 pt-2 border-t border-border">
+                  <Input 
+                    placeholder="New Language (e.g., French)" 
+                    className="max-w-[200px]"
+                    id="newLangKey"
+                  />
+                  <Input 
+                    placeholder="Level (e.g., Beginner)" 
+                    className="max-w-[200px]"
+                    id="newLangLevel"
+                  />
+                  <Button 
+                    variant="secondary"
+                    type="button"
+                    onClick={() => {
+                      const keyInput = document.getElementById("newLangKey") as HTMLInputElement;
+                      const valInput = document.getElementById("newLangLevel") as HTMLInputElement;
+                      if (keyInput.value && valInput.value) {
+                        setInfo({ 
+                          ...info!, 
+                          languages: { ...(info?.languages || {}), [keyInput.value]: valInput.value } 
+                        });
+                        keyInput.value = "";
+                        valInput.value = "";
+                      }
+                    }}
+                  >
+                    Add Language
+                  </Button>
                 </div>
               </div>
             </div>
@@ -308,6 +434,77 @@ const AdminPersonalInfo = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Hobbies Section */}
+            <div className="glass-card p-6 rounded-2xl border border-primary/5 space-y-6">
+              <h3 className="font-bold text-lg flex items-center gap-2">
+                <div className="bg-primary/20 p-1.5 rounded-lg">
+                  <svg className="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                Hobbies & Interests
+              </h3>
+              <p className="text-sm text-muted-foreground">Manage the hobbies displayed on your portfolio. Icons and colors are assigned automatically.</p>
+              
+              <div className="space-y-4">
+                {hobbies.filter(h => !h.isDeleted).map((hobby, index) => (
+                  <div key={index} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-border rounded-xl">
+                    <div className="w-full space-y-2">
+                      <label className="text-xs font-medium text-muted-foreground">English Name</label>
+                      <Input 
+                        value={hobby.en_text}
+                        onChange={(e) => {
+                          const newHobbies = [...hobbies];
+                          newHobbies[index].en_text = e.target.value;
+                          setHobbies(newHobbies);
+                        }}
+                        placeholder="e.g. Chess"
+                      />
+                    </div>
+                    <div className="w-full space-y-2">
+                      <label className="text-xs font-medium text-muted-foreground">German Name</label>
+                      <Input 
+                        value={hobby.de_text}
+                        onChange={(e) => {
+                          const newHobbies = [...hobbies];
+                          newHobbies[index].de_text = e.target.value;
+                          setHobbies(newHobbies);
+                        }}
+                        placeholder="z.B. Schach"
+                      />
+                    </div>
+                    <div className="pt-6">
+                      <Button 
+                        variant="destructive" 
+                        size="icon"
+                        type="button"
+                        onClick={() => {
+                          const newHobbies = [...hobbies];
+                          newHobbies[index].isDeleted = true;
+                          setHobbies(newHobbies);
+                        }}
+                      >
+                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/></svg>
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                
+                <Button 
+                  variant="outline"
+                  type="button"
+                  className="w-full border-dashed"
+                  onClick={() => {
+                    setHobbies([
+                      ...hobbies,
+                      { content_key: `hobby_temp_${Date.now()}`, en_text: "", de_text: "", isDeleted: false }
+                    ]);
+                  }}
+                >
+                  <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add New Hobby
+                </Button>
               </div>
             </div>
 
