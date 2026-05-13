@@ -27,6 +27,7 @@ type BubbleState = {
 type HobbyState = {
   id?: number;
   content_key: string;
+  icon: string;
   en_text: string;
   de_text: string;
   isDeleted?: boolean;
@@ -41,6 +42,14 @@ const AdminPersonalInfo = () => {
     architect_label: { text: "Software Architect", show: true },
   });
   const [hobbies, setHobbies] = useState<HobbyState[]>([]);
+  const [aboutTexts, setAboutTexts] = useState<Record<string, { id?: number, en_text: string, de_text: string }>>({
+    about_bio: { en_text: "", de_text: "" }
+  });
+  const [heroTexts, setHeroTexts] = useState<Record<string, { id?: number, en_text: string, de_text: string }>>({
+    description: { en_text: "", de_text: "" },
+    cta: { en_text: "", de_text: "" },
+    downloads_button: { en_text: "", de_text: "" },
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
@@ -78,16 +87,44 @@ const AdminPersonalInfo = () => {
       if (hobbiesError) throw hobbiesError;
       
       if (hobbiesData) {
-        setHobbies(hobbiesData.map(h => ({
-          id: h.id,
-          content_key: h.content_key,
-          en_text: h.en_text,
-          de_text: h.de_text
-        })));
+        setHobbies(hobbiesData.map(h => {
+          let iconName = "Star";
+          if (h.content_key.startsWith("icon:")) {
+            iconName = h.content_key.split("_")[0].replace("icon:", "");
+          }
+          return {
+            id: h.id,
+            content_key: h.content_key,
+            icon: iconName,
+            en_text: h.en_text,
+            de_text: h.de_text
+          };
+        }));
+      }
+
+      // Fetch About (static_content about)
+      const { data: aboutData, error: aboutError } = await supabase
+        .from("static_content")
+        .select("*")
+        .eq("section", "about");
+
+      if (aboutError) throw aboutError;
+      
+      if (aboutData) {
+        const newAboutTexts = { ...aboutTexts };
+        aboutData.forEach(item => {
+          newAboutTexts[item.content_key] = {
+            id: item.id,
+            en_text: item.en_text,
+            de_text: item.de_text
+          };
+        });
+        setAboutTexts(newAboutTexts);
       }
 
       if (staticData) {
         const newBubbles = { ...bubbles };
+        const newHeroTexts = { ...heroTexts };
         const keysFound = new Set();
         const duplicates: number[] = [];
 
@@ -105,6 +142,13 @@ const AdminPersonalInfo = () => {
               show: item.de_text !== 'false',
               id: item.id
             };
+          } else if (newHeroTexts[item.content_key]) {
+            keysFound.add(item.content_key);
+            newHeroTexts[item.content_key] = {
+              id: item.id,
+              en_text: item.en_text,
+              de_text: item.de_text
+            };
           }
         });
 
@@ -115,6 +159,7 @@ const AdminPersonalInfo = () => {
         }
 
         setBubbles(newBubbles);
+        setHeroTexts(newHeroTexts);
       }
     } catch (error: any) {
       console.error("Fetch error:", error);
@@ -181,15 +226,17 @@ const AdminPersonalInfo = () => {
         if (hobby.isDeleted && hobby.id) {
           return supabase.from('static_content').delete().eq('id', hobby.id);
         } else if (!hobby.isDeleted) {
+          const newContentKey = `icon:${hobby.icon}_${hobby.id || Date.now()}_${Math.floor(Math.random() * 100)}`;
           if (hobby.id) {
             return supabase.from('static_content').update({
+              content_key: newContentKey,
               en_text: hobby.en_text,
               de_text: hobby.de_text
             }).eq('id', hobby.id);
           } else {
             return supabase.from('static_content').insert([{
               section: 'hobbies',
-              content_key: `hobby_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+              content_key: newContentKey,
               en_text: hobby.en_text,
               de_text: hobby.de_text
             }]);
@@ -201,6 +248,58 @@ const AdminPersonalInfo = () => {
       const hobbyResults = await Promise.all(hobbyPromises);
       const firstHobbyError = hobbyResults.find(r => r.error)?.error;
       if (firstHobbyError) throw firstHobbyError;
+
+      // 4. Save About Texts
+      const aboutPromises = Object.entries(aboutTexts).map(async ([key, state]) => {
+        if (state.id) {
+          return supabase
+            .from('static_content')
+            .update({ 
+              en_text: state.en_text, 
+              de_text: state.de_text,
+            })
+            .eq('id', state.id);
+        } else if (state.en_text || state.de_text) {
+          return supabase
+            .from('static_content')
+            .insert([{ 
+              content_key: key, 
+              en_text: state.en_text, 
+              de_text: state.de_text, 
+              section: 'about' 
+            }]);
+        }
+        return { error: null };
+      });
+      const aboutResults = await Promise.all(aboutPromises);
+      const firstAboutError = aboutResults.find(r => r.error)?.error;
+      if (firstAboutError) throw firstAboutError;
+
+      // 5. Save Hero Texts
+      const heroPromises = Object.entries(heroTexts).map(async ([key, state]) => {
+        if (state.id) {
+          return supabase
+            .from('static_content')
+            .update({ 
+              en_text: state.en_text, 
+              de_text: state.de_text,
+            })
+            .eq('id', state.id);
+        } else if (state.en_text || state.de_text) {
+          return supabase
+            .from('static_content')
+            .insert([{ 
+              content_key: key, 
+              en_text: state.en_text, 
+              de_text: state.de_text, 
+              section: 'hero' 
+            }]);
+        }
+        return { error: null };
+      });
+      const heroResults = await Promise.all(heroPromises);
+      const firstHeroError = heroResults.find(r => r.error)?.error;
+      if (firstHeroError) throw firstHeroError;
 
       toast({ title: "Saved", description: "All information and bubbles updated successfully" });
       fetchData();
@@ -397,6 +496,98 @@ const AdminPersonalInfo = () => {
               </div>
             </div>
 
+            {/* About Me Bio Section */}
+            <div className="glass-card p-6 rounded-2xl border border-primary/5 space-y-6">
+              <h3 className="font-bold text-lg flex items-center gap-2">
+                <User className="h-5 w-5 text-primary" />
+                About Me (Bio)
+              </h3>
+              <p className="text-sm text-muted-foreground">Write a compelling introduction about yourself. This appears on the main page under "About Me".</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Bio (English)</label>
+                  <textarea 
+                    className="flex min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    value={aboutTexts['about_bio']?.en_text || ""} 
+                    onChange={e => setAboutTexts({...aboutTexts, about_bio: {...aboutTexts['about_bio'], en_text: e.target.value}})}
+                    placeholder="I am a software developer..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Bio (German)</label>
+                  <textarea 
+                    className="flex min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    value={aboutTexts['about_bio']?.de_text || ""} 
+                    onChange={e => setAboutTexts({...aboutTexts, about_bio: {...aboutTexts['about_bio'], de_text: e.target.value}})}
+                    placeholder="Ich bin ein Softwareentwickler..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Hero Section Texts */}
+            <div className="glass-card p-6 rounded-2xl border border-primary/5 space-y-6">
+              <h3 className="font-bold text-lg flex items-center gap-2">
+                <Globe className="h-5 w-5 text-primary" />
+                Hero Section Texts
+              </h3>
+              <p className="text-sm text-muted-foreground">Manage the job title and button texts in the first section of your website.</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Job Title / Subtitle (English)</label>
+                  <Input 
+                    value={heroTexts['description']?.en_text || ""} 
+                    onChange={e => setHeroTexts({...heroTexts, description: {...heroTexts['description'], en_text: e.target.value}})}
+                    placeholder="e.g. Software Developer & AI Specialist"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Job Title / Subtitle (German)</label>
+                  <Input 
+                    value={heroTexts['description']?.de_text || ""} 
+                    onChange={e => setHeroTexts({...heroTexts, description: {...heroTexts['description'], de_text: e.target.value}})}
+                    placeholder="e.g. Software-Entwickler & KI-Spezialist"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Primary Button (English)</label>
+                  <Input 
+                    value={heroTexts['cta']?.en_text || ""} 
+                    onChange={e => setHeroTexts({...heroTexts, cta: {...heroTexts['cta'], en_text: e.target.value}})}
+                    placeholder="e.g. Get in touch"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Primary Button (German)</label>
+                  <Input 
+                    value={heroTexts['cta']?.de_text || ""} 
+                    onChange={e => setHeroTexts({...heroTexts, cta: {...heroTexts['cta'], de_text: e.target.value}})}
+                    placeholder="e.g. Kontakt aufnehmen"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Secondary Button (English)</label>
+                  <Input 
+                    value={heroTexts['downloads_button']?.en_text || ""} 
+                    onChange={e => setHeroTexts({...heroTexts, downloads_button: {...heroTexts['downloads_button'], en_text: e.target.value}})}
+                    placeholder="e.g. View Downloads"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Secondary Button (German)</label>
+                  <Input 
+                    value={heroTexts['downloads_button']?.de_text || ""} 
+                    onChange={e => setHeroTexts({...heroTexts, downloads_button: {...heroTexts['downloads_button'], de_text: e.target.value}})}
+                    placeholder="e.g. Downloads anzeigen"
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Hero Skills Section */}
             <div className="glass-card p-6 rounded-2xl border border-primary/5 space-y-6">
               <h3 className="font-bold text-lg flex items-center gap-2">
@@ -450,6 +641,28 @@ const AdminPersonalInfo = () => {
               <div className="space-y-4">
                 {hobbies.filter(h => !h.isDeleted).map((hobby, index) => (
                   <div key={index} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-border rounded-xl">
+                    <div className="w-full sm:w-1/4 space-y-2">
+                      <label className="text-xs font-medium text-muted-foreground">Icon</label>
+                      <select
+                        className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        value={hobby.icon}
+                        onChange={(e) => {
+                          const newHobbies = [...hobbies];
+                          newHobbies[index].icon = e.target.value;
+                          setHobbies(newHobbies);
+                        }}
+                      >
+                        <option value="Star">Star</option>
+                        <option value="Gamepad2">Gaming</option>
+                        <option value="BookOpen">Reading</option>
+                        <option value="Trophy">Sports/Trophy</option>
+                        <option value="Compass">Travel</option>
+                        <option value="Music">Music</option>
+                        <option value="Camera">Photography</option>
+                        <option value="Heart">Health/Heart</option>
+                        <option value="Zap">Energy/Action</option>
+                      </select>
+                    </div>
                     <div className="w-full space-y-2">
                       <label className="text-xs font-medium text-muted-foreground">English Name</label>
                       <Input 
@@ -498,7 +711,7 @@ const AdminPersonalInfo = () => {
                   onClick={() => {
                     setHobbies([
                       ...hobbies,
-                      { content_key: `hobby_temp_${Date.now()}`, en_text: "", de_text: "", isDeleted: false }
+                      { content_key: `icon:Star_${Date.now()}`, icon: "Star", en_text: "", de_text: "", isDeleted: false }
                     ]);
                   }}
                 >

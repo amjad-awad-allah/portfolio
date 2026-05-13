@@ -118,8 +118,8 @@ const Navbar = () => {
             >
               <Code className="h-5 w-5" />
             </motion.span>
-            <span className="font-bold text-foreground">
-              Amjad Awad-Allah
+            <span className="font-bold text-foreground whitespace-nowrap">
+              {t("hero.title")}
             </span>
           </a>
 

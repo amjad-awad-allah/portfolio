@@ -80,9 +80,11 @@ const About = () => {
           variants={containerVariants}
         >
           <motion.h2 variants={itemVariants} className="heading-lg mb-4 text-foreground">
-            {t("about.title")}
+            {getText('about_title', t("about.title"))}
           </motion.h2>
-          <motion.p variants={itemVariants} className="paragraph">{t("about.bio")}</motion.p>
+          <motion.p variants={itemVariants} className="paragraph whitespace-pre-line">
+            {getText('about_bio', t("about.bio"))}
+          </motion.p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">

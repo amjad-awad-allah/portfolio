@@ -81,8 +81,16 @@ const Hobbies = () => {
   // Map dynamic hobbies or fallback to display items
   const hobbiesToDisplay = dynamicHobbies.length > 0 
     ? dynamicHobbies.map((h, i) => {
+        let iconName = "Star";
+        if (h.content_key && h.content_key.startsWith("icon:")) {
+           iconName = h.content_key.split("_")[0].replace("icon:", "");
+        }
+        
+        // Map string names to actual Lucide components
+        const iconsMap: any = { Gamepad2, BookOpen, Trophy, Music, Camera, Compass, Heart, Star, Zap };
+        const StyleIcon = iconsMap[iconName] || Star;
+        
         const style = stylePool[i % stylePool.length];
-        const StyleIcon = style.icon;
         return {
           name: language === 'en' ? h.en_text : h.de_text,
           icon: <StyleIcon className="h-8 w-8" />,
