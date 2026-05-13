@@ -125,7 +125,7 @@ const AdminDashboard = () => {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-[10px] uppercase tracking-widest font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">Pro Edition</span>
-            <span className="text-xs font-mono">v1.4.6</span>
+            <span className="text-xs font-mono">v1.4.7</span>
           </div>
         </div>
       </main>
